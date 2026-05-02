@@ -1,0 +1,2 @@
+{"time": "2026-04-30 23:30:04", "event": "restricted_zone_intrusion", "duration_seconds": 2, "snapshot": "snapshots/restricted_zone_intrusion_20260430_233004.jpg", "restricted_zone": {"x1": 50, "y1": 50, "x2": 900, "y2": 700}}
+{"time": "2026-04-30 23:38:54", "event": "restricted_zone_intrusion", "duration_seconds": 2, "snapshot": "snapshots/restricted_zone_intrusion_20260430_233854.jpg", "restricted_zone": {"x1": 50, "y1": 50, "x2": 900, "y2": 700}}

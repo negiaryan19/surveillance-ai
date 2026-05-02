@@ -1,70 +1,90 @@
 """
-AI Surveillance System
-----------------------
-Detects intruders, analyzes behavior, sends smart alerts.
+AI Surveillance System - Main Entry Point
+------------------------------------------
+Runs detection + Telegram bot together.
 """
 
+import sys
+import os
 import cv2
 import time
-import os
+import threading
 from datetime import datetime
+from pathlib import Path
 from ultralytics import YOLO
 
-from smart_alert import (
+# Add parent directory for imports
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from src.smart_alert import (
     BehaviorTracker,
     calculate_threat_level,
     create_report,
     send_alert_to_telegram
 )
-
-
-# ========================================
-# Settings
-# ========================================
-MODEL_PATH = "./yolov8n.pt"
-ZONE = (0, 0, 1000, 800)
-LOITER_TIME = 2
-ALERT_COOLDOWN = 10
-
-SNAPSHOT_DIR = "snapshots"
-LOG_FILE = "alerts.log"
-ALERT_SOUND = "sounds/alert.mp3"
-
-PERSON_CLASS_ID = 0
-CONFIDENCE_LIMIT = 0.55
-
+from src.shared_state import system_state
+from src.telegram_bot import run_telegram_bot
+from config.settings import (
+    MODEL_PATH, ZONE, LOITER_TIME, ALERT_COOLDOWN,
+    SNAPSHOTS_DIR, LOG_FILE, ALERT_SOUND,
+    PERSON_CLASS_ID, CONFIDENCE_LIMIT,
+    CAMERA_INDEX, USE_AVFOUNDATION
+)
 
 # ========================================
 # Setup
 # ========================================
 print("🚀 Starting AI Surveillance System...")
+print("=" * 50)
 
+# Load AI model
+print("🧠 Loading YOLOv8 model...")
 model = YOLO(MODEL_PATH)
-camera = cv2.VideoCapture(0, cv2.CAP_AVFOUNDATION)
+print("✅ Model loaded!")
+
+# Open camera
+print("📷 Opening camera...")
+if USE_AVFOUNDATION:
+    camera = cv2.VideoCapture(CAMERA_INDEX, cv2.CAP_AVFOUNDATION)
+else:
+    camera = cv2.VideoCapture(CAMERA_INDEX)
 
 if not camera.isOpened():
     print("❌ Camera not working.")
     exit()
 
-os.makedirs(SNAPSHOT_DIR, exist_ok=True)
+print("✅ Camera ready!")
 
+# Initialize tracker
 tracker = BehaviorTracker()
 loiter_start_time = None
 alert_already_sent = False
 last_alert_time = 0
 
-print("✅ Ready! Press 'Q' to exit.\n")
-
+# Update zone in shared state
+system_state.zone_coordinates = ZONE
 
 # ========================================
-# Main Loop
+# Start Telegram Bot in Background
+# ========================================
+print("\n🤖 Starting Telegram Bot in background...")
+bot_thread = threading.Thread(target=run_telegram_bot, daemon=True)
+bot_thread.start()
+time.sleep(2)  # Give bot time to start
+print("=" * 50)
+print("✅ All systems ready! Press 'Q' to exit.\n")
+
+# ========================================
+# Main Detection Loop
 # ========================================
 while True:
-
     success, frame = camera.read()
     if not success:
         print("⚠️ Camera frame missing.")
         break
+
+    # Update shared state with current frame (for /snapshot command)
+    system_state.update_frame(frame)
 
     # Draw the restricted zone
     zone_x1, zone_y1, zone_x2, zone_y2 = ZONE
@@ -83,7 +103,6 @@ while True:
 
     for detection in detections:
         for box in detection.boxes:
-
             class_id = int(box.cls[0])
             confidence = float(box.conf[0])
 
@@ -127,9 +146,16 @@ while True:
         cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2
     )
 
+    # Show pause indicator
+    if system_state.is_paused():
+        cv2.putText(
+            frame, "⏸ ALERTS PAUSED",
+            (10, 200),
+            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2
+        )
+
     # Alert logic
     if is_someone_in_zone:
-
         if loiter_start_time is None:
             loiter_start_time = time.time()
 
@@ -156,7 +182,6 @@ while True:
         )
 
         if should_send_alert:
-
             alert_already_sent = True
             last_alert_time = current_time
 
@@ -181,23 +206,28 @@ while True:
 
             # Save snapshot
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            snapshot_path = f"{SNAPSHOT_DIR}/intruder_{timestamp}.jpg"
+            snapshot_path = str(SNAPSHOTS_DIR / f"intruder_{timestamp}.jpg")
             cv2.imwrite(snapshot_path, frame)
 
-            # Send to Telegram
-            send_alert_to_telegram(report_message, snapshot_path)
+            # Record in shared state
+            system_state.add_alert(threat_level, behavior, total_people)
 
-            # Voice alert
-            if threat_level == "CRITICAL":
-                os.system('say "Critical threat detected" &')
-            elif threat_level == "HIGH":
-                os.system('say "High alert. Intruder detected" &')
+            # Send alert (only if not paused)
+            if system_state.is_paused():
+                print("⏸️ Alerts paused - skipping Telegram notification")
             else:
-                os.system('say "Intruder detected" &')
+                send_alert_to_telegram(report_message, snapshot_path)
 
-            # Alarm sound
-            if os.path.exists(ALERT_SOUND):
-                os.system(f'afplay "{ALERT_SOUND}" &')
+                # Voice/Audio alerts
+                if threat_level == "CRITICAL":
+                    os.system('say "Critical threat detected" &')
+                elif threat_level == "HIGH":
+                    os.system('say "High alert. Intruder detected" &')
+                else:
+                    os.system('say "Intruder detected" &')
+
+                if os.path.exists(ALERT_SOUND):
+                    os.system(f'afplay "{ALERT_SOUND}" &')
 
             # Log it
             with open(LOG_FILE, "a") as log:
@@ -209,7 +239,6 @@ while True:
                 )
 
     else:
-        # Reset when zone is clear
         loiter_start_time = None
         alert_already_sent = False
         tracker.reset()
@@ -224,7 +253,6 @@ while True:
 
     if cv2.waitKey(1) & 0xFF == ord("q"):
         break
-
 
 # Cleanup
 camera.release()

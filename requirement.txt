@@ -1,0 +1,6 @@
+ultralytics
+opencv-python
+requests
+python-telegram-bot
+python-dotenv
+numpy

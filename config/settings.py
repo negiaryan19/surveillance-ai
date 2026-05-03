@@ -36,7 +36,7 @@ ZONE = (0, 0, 1000, 800)         # (x1, y1, x2, y2)
 LOITER_TIME = 2                   # seconds
 ALERT_COOLDOWN = 10               # seconds between alerts
 PERSON_CLASS_ID = 0               # YOLO class for person
-CONFIDENCE_LIMIT = 0.55           # Minimum confidence
+CONFIDENCE_LIMIT = 0.65           # Minimum confidence
 
 
 # ========================================

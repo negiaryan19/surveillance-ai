@@ -1,7 +1,7 @@
 """
-AI Surveillance System - Command Center (Phase 3.4)
+AI Surveillance System - Command Center (Phase 3.5)
 ---------------------------------------------------
-Updates: Multi-Class, Face ID, Anomaly Detection + 🌙 NIGHT MODE
+Updates: Multi-Class, Face ID, Anomaly Detection + 🌙 NIGHT MODE + 🛡️ ANTI-SPOOFING (Liveness)
 """
 
 import sys
@@ -26,8 +26,9 @@ from src.zones import ZoneManager
 from src.video_recorder import VideoRecorder 
 from src.face_recognizer import FaceRecognizer
 from src.anomaly_detector import AnomalyDetector
-# NAYA IMPORT: Night Vision
 from src.night_vision import NightVision
+# NAYA IMPORT: Liveness Detector
+from src.liveness_detector import LivenessDetector
 
 from config.settings import (
     MODEL_PATH, LOITER_TIME, ALERT_COOLDOWN,
@@ -39,7 +40,7 @@ REAL_VIDEOS_DIR = BASE_DIR / "database" / "videos"
 KNOWN_FACES_DIR = BASE_DIR / "database" / "known_faces"
 ENCODINGS_FILE = BASE_DIR / "database" / "face_encodings.pkl"
 
-print("🚀 Initializing Phase 3.4: Autonomous Defense & Night Vision...")
+print("🚀 Initializing Phase 3.5: Autonomous Defense, Night Vision & Anti-Spoofing...")
 model = YOLO(MODEL_PATH)
 camera = cv2.VideoCapture(CAMERA_INDEX, cv2.CAP_AVFOUNDATION if USE_AVFOUNDATION else None)
 
@@ -52,8 +53,9 @@ recorder = VideoRecorder(output_dir=REAL_VIDEOS_DIR)
 face_id = FaceRecognizer(str(KNOWN_FACES_DIR), str(ENCODINGS_FILE))
 anomaly_detector = AnomalyDetector()
 
-# Initialize Night Vision
+# Initialize Night Vision & Liveness
 nv = NightVision(threshold=85)
+liveness_detector = LivenessDetector()
 
 THREAT_CLASSES = {
     0: {"name": "Person", "color": (0, 255, 255)},
@@ -74,7 +76,7 @@ def async_alert(report, path, zone_level):
     send_alert_to_telegram(report, path)
     os.system(f'say -v Samantha "Alert. {report} in {zone_level}" &')
 
-print("✅ System ONLINE | Anomaly & Night Vision Active")
+print("✅ System ONLINE | Anomaly, Night Vision & Liveness Active")
 
 try:
     while True:
@@ -90,6 +92,10 @@ try:
         if nv.is_low_light(frame):
             frame = nv.enhance(frame)
             is_night_active = True
+
+        # 🛡️ ANTI-SPOOFING: Liveness Check (Run on every frame)
+        is_live, blinks = liveness_detector.check_liveness(frame)
+        cv2.putText(frame, f"Blinks: {blinks}", (10, 90), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
 
         if frame_count % 5 == 0:
             recorder.update(frame)
@@ -111,14 +117,23 @@ try:
                         box_color = threat_info["color"]
                         is_authorized = False
 
+                        # 🧠 MILITARY-GRADE LOGIC: Face ID + Liveness Check
                         if class_id == 0:
                             identity = face_id.identify(frame, (x1, y1, x2, y2))
                             if identity != "Unknown" and identity is not None:
-                                label = f"✅ AUTH: {identity}"
-                                box_color = (0, 255, 0)
-                                is_authorized = True
+                                if is_live:
+                                    # Real Person + Authorized
+                                    label = f"✅ AUTH: {identity}"
+                                    box_color = (0, 255, 0)
+                                    is_authorized = True
+                                else:
+                                    # Shakal match hui par Blink nahi kiya (Phone Spoofing)
+                                    label = f"⚠️ SPOOF: {identity}"
+                                    box_color = (0, 165, 255) 
+                                    is_authorized = False # Block the intruder!
                             else:
-                                label = "⚠️ INTRUDER"
+                                # Shakal hi match nahi hui
+                                label = "🚨 INTRUDER"
                                 box_color = (0, 0, 255)
 
                         cv2.rectangle(frame, (x1, y1), (x2, y2), box_color, 2)

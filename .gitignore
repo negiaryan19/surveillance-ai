@@ -21,3 +21,10 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+
+
+# cd /Users/aryannegi/Desktop/satellite_ai/surveillance-ai
+# source venv/bin/activate
+# pip install -r requirement.txt
+# python3 src/main.py

@@ -4,64 +4,62 @@ import face_recognition
 
 class LivenessDetector:
     def __init__(self):
-        # EAR (Eye Aspect Ratio) Threshold
-        self.EAR_THRESHOLD = 0.21  
-        self.blink_count = 0
-        self.eye_closed = False
+        # ⚡ Using face_recognition (already installed and working on your Mac!)
+        self.EAR_THRESH = 0.22  # Sensitivity Threshold
+        self.CONSEC_FRAMES = 1  
+        
+        self.blink_counter = 0
+        self.total_blinks = 0
+        self.is_live = False
 
-    def _calculate_distance(self, p1, p2):
+    def euclidean_distance(self, p1, p2):
+        """Calculates distance between two (x, y) points."""
         return math.dist(p1, p2)
 
-    def calculate_ear(self, eye_points):
-        # face_recognition gives points as (x, y) tuples
+    def get_ear(self, eye):
+        """Calculates Eye Aspect Ratio (EAR) using 6 eye landmarks."""
         # Vertical distances
-        v1 = self._calculate_distance(eye_points[1], eye_points[5])
-        v2 = self._calculate_distance(eye_points[2], eye_points[4])
+        v1 = self.euclidean_distance(eye[1], eye[5])
+        v2 = self.euclidean_distance(eye[2], eye[4])
         # Horizontal distance
-        h = self._calculate_distance(eye_points[0], eye_points[3])
-        # EAR Formula
-        ear = (v1 + v2) / (2.0 * h) if h != 0 else 0
-        return ear
+        h = self.euclidean_distance(eye[0], eye[3])
+        
+        if h == 0:
+            return 0
+        return (v1 + v2) / (2.0 * h)
 
     def check_liveness(self, frame):
-        """Returns (is_live, current_blink_count)"""
-        # Convert to RGB array for face_recognition
+        """Analyzes frame for blinks and returns (is_live, total_blinks)."""
+        # Convert BGR to RGB for face_recognition
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         
-        # Get face landmarks using the already working face_recognition library
+        # Find all facial features in the image
         face_landmarks_list = face_recognition.face_landmarks(rgb_frame)
-        
-        is_live = False
-        
-        if face_landmarks_list:
-            for face_landmarks in face_landmarks_list:
-                # Check if eyes are detected
-                if 'left_eye' in face_landmarks and 'right_eye' in face_landmarks:
-                    left_eye = face_landmarks['left_eye']
-                    right_eye = face_landmarks['right_eye']
-                    
-                    # Calculate EAR for both eyes
-                    ear_left = self.calculate_ear(left_eye)
-                    ear_right = self.calculate_ear(right_eye)
-                    
-                    # Average EAR
-                    ear = (ear_left + ear_right) / 2.0
-                    
-                    # Blink Detection Logic
-                    if ear < self.EAR_THRESHOLD:
-                        self.eye_closed = True
-                    else:
-                        if self.eye_closed:  # Eye was closed, now open -> Blink!
-                            self.blink_count += 1
-                            self.eye_closed = False
-                    
-                    # Agar 1 bhi blink hui, toh banda ZINDA (Live) hai!
-                    if self.blink_count >= 1:
-                        is_live = True
-                        
-        return is_live, self.blink_count
 
-    def reset(self):
-        """Blinks ko wapas zero karne ke liye"""
-        self.blink_count = 0
-        self.eye_closed = False
+        for face_landmarks in face_landmarks_list:
+            # Extract eyes coordinates
+            left_eye = face_landmarks.get('left_eye')
+            right_eye = face_landmarks.get('right_eye')
+
+            if left_eye and right_eye:
+                left_ear = self.get_ear(left_eye)
+                right_ear = self.get_ear(right_eye)
+                
+                # Average EAR of both eyes
+                ear = (left_ear + right_ear) / 2.0
+                
+                # 🐛 DEBUGGER: Live EAR values printed to terminal
+                print(f"👀 Live EAR: {ear:.3f} | Need to drop below: {self.EAR_THRESH}")
+
+                # Check if eyes are closed
+                if ear < self.EAR_THRESH:
+                    self.blink_counter += 1
+                else:
+                    # Eyes opened after being closed
+                    if self.blink_counter >= self.CONSEC_FRAMES:
+                        self.total_blinks += 1
+                        self.is_live = True
+                        print(f"✅ BLINK CAUGHT! Total Blinks: {self.total_blinks}")
+                    self.blink_counter = 0
+                    
+        return self.is_live, self.total_blinks

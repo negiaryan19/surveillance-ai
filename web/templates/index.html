@@ -4,156 +4,126 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Chanakya | Command Center</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS for Military UI -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Chart.js for Live Detection Graphs -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { background-color: #0f172a; color: #e2e8f0; }
+        .neon-border { border: 1px solid #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); }
+        /* Custom scrollbar for logs */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+    </style>
 </head>
-<body class="bg-slate-950 text-slate-300 font-sans h-screen overflow-hidden flex flex-col selection:bg-red-500">
+<body class="p-4 md:p-8 font-mono h-screen flex flex-col">
     
-    <!-- HEADER -->
-    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex justify-between items-center shrink-0 shadow-lg">
+    <!-- 🟢 HEADER SECTION -->
+    <header class="flex flex-wrap justify-between items-center mb-6 pb-4 border-b border-gray-700 gap-4">
         <div>
-            <h1 class="text-2xl font-extrabold text-red-500 tracking-widest flex items-center">
-                PROJECT CHANAKYA 
-                <span class="text-slate-500 text-lg font-medium ml-3 border-l border-slate-700 pl-3">COMMAND CENTER</span>
-            </h1>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-red-500 tracking-widest drop-shadow-md">PROJECT CHANAKYA</h1>
+            <h2 class="text-lg md:text-xl text-blue-400 tracking-[0.3em]">COMMAND CENTER</h2>
         </div>
-        <div class="flex items-center space-x-4 font-mono text-sm">
-            <span class="px-3 py-1 bg-slate-800 rounded-md border border-slate-700">CPU: <span class="text-blue-400">ACTIVE</span></span>
-            <span class="px-3 py-1 bg-slate-800 rounded-md border border-slate-700 flex items-center">
-                <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></span> SYSTEM ONLINE
-            </span>
+        <div class="flex space-x-3 text-xs md:text-sm">
+            <div class="bg-blue-900/30 border border-blue-500 px-4 py-2 rounded text-blue-300 font-bold tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">
+                CPU: ACTIVE
+            </div>
+            <div class="bg-green-900/30 border border-green-500 px-4 py-2 rounded text-green-400 font-bold flex items-center tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.2)]">
+                <span class="h-2 w-2 bg-green-500 rounded-full mr-2 animate-pulse"></span> SYSTEM ONLINE
+            </div>
         </div>
     </header>
 
-    <!-- MAIN DASHBOARD -->
-    <div class="flex-1 p-4 grid grid-cols-1 lg:grid-cols-4 gap-4 overflow-hidden">
+    <!-- 🟢 MAIN DASHBOARD GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
         
-        <!-- LEFT COLUMN (Span 3): Camera & Graphs -->
-        <div class="lg:col-span-3 flex flex-col gap-4 overflow-y-auto pr-2">
-            
-            <!-- 🎥 LIVE CAMERA SECTION -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
-                <div class="flex justify-between items-center mb-3">
-                    <h2 class="text-md font-bold flex items-center tracking-wide text-white">
-                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></span> 
-                        REAL-TIME HUMAN DETECTION (MJPEG)
-                    </h2>
-                    
-                    <!-- View Toggles -->
-                    <div class="flex space-x-4 text-xs font-mono">
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer" checked>
-                            <div class="w-8 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500 relative"></div>
-                            <span class="ml-2 text-slate-400 peer-checked:text-white transition-colors">Show Named Zones</span>
-                        </label>
-                        <label class="flex items-center cursor-pointer">
-                            <input type="checkbox" class="sr-only peer">
-                            <div class="w-8 h-4 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-red-500 relative"></div>
-                            <span class="ml-2 text-slate-400 peer-checked:text-red-400 transition-colors">Hide Masked</span>
-                        </label>
-                    </div>
-                </div>
-                
-                <!-- Camera Feed Container -->
-                <div class="w-full bg-black rounded-lg border border-slate-700 overflow-hidden relative aspect-video flex justify-center items-center">
-                    <img src="{{ url_for('video_feed') }}" alt="Live Feed" class="object-contain w-full h-full opacity-90 hover:opacity-100 transition-opacity">
-                    <!-- Overlay Grid Pattern (Optional Cyberpunk Feel) -->
-                    <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgNDAiIGZpbGw9Im5vbmUiIHN0cm9rZT0icmdiYSgyNTUsMjU1LDI1NSwwLjA1KSIgc3Ryb2tlLXdpZHRoPSIxIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyaWQpIi8+PC9zdmc+')] pointer-events-none"></div>
-                </div>
+        <!-- Left Column: Video Feed (Spans 2 columns on large screens) -->
+        <div class="col-span-1 lg:col-span-2 flex flex-col neon-border bg-gray-800 rounded-lg overflow-hidden">
+            <div class="bg-gray-900 px-4 py-3 flex justify-between items-center border-b border-gray-700">
+                <h3 class="text-sm font-bold text-gray-300 tracking-wider">
+                    <span class="text-red-500 inline-block mr-2 animate-pulse">●</span> REAL-TIME SURVEILLANCE
+                </h3>
+                <span class="text-xs text-gray-500 border border-gray-600 px-2 py-1 rounded">ZONE: ALPHA</span>
             </div>
-
-            <!-- 📊 GRAPHS SECTION -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-md font-bold tracking-wide text-white">DETECTION GRAPHS</h2>
-                    <select class="bg-slate-800 border border-slate-700 text-xs font-mono rounded-md px-2 py-1 outline-none focus:border-blue-500 text-slate-300">
-                        <option>Last 1 Hour</option>
-                        <option>Last 3 Hours</option>
-                        <option>Last 24 Hours</option>
-                        <option>Last Week</option>
-                        <option>Last Month</option>
-                    </select>
-                </div>
-                <!-- Chart.js Canvas -->
-                <div class="w-full h-48 bg-slate-950 rounded-lg border border-slate-800 p-2 relative flex items-center justify-center">
-                    <canvas id="detectionChart"></canvas>
-                    <!-- Fallback if no data -->
-                    <!-- <span class="absolute text-slate-600 font-mono text-sm">No detection data available for this time range.</span> -->
-                </div>
+            
+            <!-- Video Container -->
+            <div class="flex-1 bg-black relative flex items-center justify-center min-h-[400px]">
+                <img src="{{ url_for('video_feed') }}" alt="Live Feed" class="w-full h-full object-contain">
             </div>
         </div>
 
-        <!-- RIGHT COLUMN (Span 1): Logs & Recent -->
-        <div class="flex flex-col gap-4 overflow-hidden">
+        <!-- Right Column: Database Logs & Metrics -->
+        <div class="col-span-1 flex flex-col gap-6 min-h-0">
             
-            <!-- 🚨 LATEST DETECTIONS -->
-            <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-xl h-1/3 flex flex-col">
-                <h2 class="text-md font-bold tracking-wide text-white mb-3">LATEST DETECTIONS</h2>
-                <div class="flex-1 overflow-y-auto space-y-2 pr-1">
-                    <!-- Empty State for now -->
-                    <div class="border border-dashed border-slate-700 rounded-lg p-4 text-center flex flex-col items-center justify-center h-full text-slate-500">
-                        <svg class="w-8 h-8 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-                        <p class="text-xs font-mono">No recent threats logged.</p>
+            <!-- Latest Detections Panel -->
+            <div class="flex-1 flex flex-col neon-border bg-gray-800 rounded-lg overflow-hidden">
+                <div class="bg-gray-900 px-4 py-3 border-b border-gray-700">
+                    <h3 class="text-sm font-bold text-blue-400 tracking-wider">LATEST DETECTIONS</h3>
+                </div>
+                
+                <!-- 🎯 THIS IS WHERE JAVASCRIPT INJECTS DATA -->
+                <div id="detection-logs" class="flex-1 p-3 overflow-y-auto space-y-2 bg-gray-900/50">
+                    <div class="flex items-center justify-center h-full text-gray-500 text-sm animate-pulse">
+                        Awaiting database sync...
                     </div>
                 </div>
             </div>
 
-            <!-- 💻 BACKEND LOGS (Terminal Style) -->
-            <div class="bg-black border border-slate-800 rounded-xl p-4 shadow-xl flex-1 flex flex-col font-mono text-xs overflow-hidden">
-                <h2 class="text-sm font-bold tracking-wide text-slate-400 border-b border-slate-800 pb-2 mb-2 flex justify-between">
-                    <span>BACKEND LOGS</span>
-                    <span class="text-slate-600">system.log</span>
-                </h2>
-                <div class="flex-1 overflow-y-auto space-y-1 pr-2 text-slate-400">
-                    <div><span class="text-slate-500">00:29:41</span> - <span class="text-yellow-400">[WARNING]</span> Masked regions file not found.</div>
-                    <div><span class="text-slate-500">00:29:41</span> - <span class="text-yellow-400">[WARNING]</span> Named zones file not found.</div>
-                    <div><span class="text-slate-500">00:29:46</span> - <span class="text-yellow-400">[WARNING]</span> Telegram alerts are disabled.</div>
-                    <div><span class="text-slate-500">00:29:46</span> - <span class="text-red-500">[ERROR]</span> Failed to access '/mnt/yolo_detections/': [Errno 30] Read-only file system.</div>
-                    <div><span class="text-slate-500">00:29:46</span> - <span class="text-red-600 font-bold">[CRITICAL]</span> Error: [Errno 30] Read-only file system: '/mnt'. Trying fallback.</div>
-                    <div><span class="text-slate-500">00:32:23</span> - <span class="text-yellow-400">[WARNING]</span> CUDA not available, using CPU for model inference.</div>
-                    <div><span class="text-slate-500">00:32:23</span> - <span class="text-yellow-400">[WARNING]</span> CUDA denoising is not available.</div>
-                    <div class="text-green-500 mt-2">► System waiting for new events...</div>
+            <!-- Mini Status Panel -->
+            <div class="h-32 neon-border bg-gray-800 rounded-lg overflow-hidden flex flex-col">
+                <div class="bg-gray-900 px-4 py-2 border-b border-gray-700">
+                    <h3 class="text-xs font-bold text-gray-400 tracking-wider">DB CONNECTION</h3>
+                </div>
+                <div class="flex-1 p-4 flex flex-col justify-center">
+                    <p class="text-green-500 text-sm font-bold">✓ SQLite Active</p>
+                    <p class="text-gray-400 text-xs mt-1">Fetching new logs every 2.5s</p>
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Script to Initialize the Dummy Chart -->
+    <!-- 🧠 DYNAMIC JAVASCRIPT (Fetches from /api/logs) -->
     <script>
-        const ctx = document.getElementById('detectionChart').getContext('2d');
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(239, 68, 68, 0.5)'); // Red
-        gradient.addColorStop(1, 'rgba(239, 68, 68, 0.0)');
+        function updateDashboard() {
+            fetch('/api/logs')
+                .then(response => response.json())
+                .then(data => {
+                    const logContainer = document.getElementById('detection-logs');
+                    
+                    if (data.length > 0) {
+                        logContainer.innerHTML = ''; // Clear the "awaiting sync" message
+                        
+                        data.forEach(log => {
+                            // Logic for colors based on Threat Score
+                            let isHighThreat = log.threat > 50;
+                            let bgClass = isHighThreat ? 'bg-red-900/20 border-red-500/50' : 'bg-gray-800 border-gray-600';
+                            let textClass = isHighThreat ? 'text-red-400' : 'text-green-400';
+                            let icon = isHighThreat ? '⚠️' : '✅';
+                            
+                            // Build the HTML for a single log entry
+                            let logHTML = `
+                                <div class="border flex flex-col p-3 rounded-md shadow-sm ${bgClass}">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] text-gray-400">${log.timestamp}</span>
+                                        <span class="font-bold text-xs ${textClass}">Threat: ${log.threat}%</span>
+                                    </div>
+                                    <div class="text-white font-bold tracking-wider text-sm">
+                                        ${icon} ${log.object}
+                                    </div>
+                                </div>
+                            `;
+                            logContainer.innerHTML += logHTML;
+                        });
+                    }
+                })
+                .catch(error => console.error('DB Sync Error:', error));
+        }
 
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['10:00', '10:15', '10:30', '10:45', '11:00', '11:15'],
-                datasets: [{
-                    label: 'Threat Alerts',
-                    data: [0, 2, 1, 5, 0, 3],
-                    borderColor: '#ef4444',
-                    backgroundColor: gradient,
-                    borderWidth: 2,
-                    fill: true,
-                    tension: 0.4,
-                    pointBackgroundColor: '#ef4444',
-                    pointBorderColor: '#1e293b'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { family: 'monospace' } } },
-                    y: { grid: { color: '#1e293b' }, ticks: { color: '#64748b', font: { family: 'monospace' }, stepSize: 1 } }
-                }
-            }
-        });
+        // Keep checking the database every 2.5 seconds
+        setInterval(updateDashboard, 2500);
+        
+        // Initial fetch when page loads
+        updateDashboard();
     </script>
 </body>
 </html>

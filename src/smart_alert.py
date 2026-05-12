@@ -16,11 +16,11 @@ load_dotenv()
 # ========================================
 # Telegram details (loaded from .env)
 # ========================================
-BOT_TOKEN = os.getenv("BOT_TOKEN")
-CHAT_ID = os.getenv("CHAT_ID")
+BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 
 if not BOT_TOKEN or not CHAT_ID:
-    print("⚠️  Warning: BOT_TOKEN or CHAT_ID missing in .env file!")
+    print("⚠️  Warning: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID missing in .env file!")
 
 
 # ========================================

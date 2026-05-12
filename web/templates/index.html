@@ -3,127 +3,170 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Chanakya | Command Center</title>
-    <!-- Tailwind CSS for Military UI -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Project Chanakya | Multi-Grid Command Center</title>
     <style>
-        body { background-color: #0f172a; color: #e2e8f0; }
-        .neon-border { border: 1px solid #1e293b; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5); }
-        /* Custom scrollbar for logs */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #1e293b; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 4px; }
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --neon-cyan: #00ffcc;
+            --neon-red: #ff3333;
+            --text-gray: #8b949e;
+            --border-color: #30363d;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 { margin: 0; color: var(--neon-cyan); letter-spacing: 2px; font-size: 24px; text-transform: uppercase; }
+        
+        .status-badge {
+            background: rgba(0, 255, 204, 0.1); color: var(--neon-cyan);
+            padding: 5px 15px; border: 1px solid var(--neon-cyan);
+            border-radius: 4px; font-size: 14px; font-weight: bold;
+        }
+
+        /* GRID LAYOUT FOR MULTI-CAM */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .camera-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr; /* 2 Cameras side-by-side */
+            gap: 15px;
+        }
+
+        .video-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 10px;
+            position: relative;
+        }
+
+        .video-card h2 {
+            font-size: 14px; color: var(--text-gray);
+            margin: 0 0 10px 0; display: flex; align-items: center;
+        }
+
+        .video-card h2::before {
+            content: ""; width: 8px; height: 8px;
+            background: var(--neon-red); border-radius: 50%;
+            display: inline-block; margin-right: 10px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+
+        .feed-img { width: 100%; border-radius: 4px; border: 1px solid #444; }
+
+        /* LOGS PANEL */
+        .side-panel { display: flex; flex-direction: column; gap: 20px; }
+        .logs-card {
+            background: var(--card-bg); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 15px; height: 400px;
+            display: flex; flex-direction: column;
+        }
+
+        .logs-container { flex-grow: 1; overflow-y: auto; font-size: 13px; }
+        .log-entry { padding: 8px; border-bottom: 1px solid #222; display: flex; justify-content: space-between; }
+        .threat-critical { color: var(--neon-red); font-weight: bold; }
+        .threat-warning { color: #d2a8ff; }
+        .threat-safe { color: var(--neon-cyan); }
+
+        /* SECURE DOWNLOAD BUTTON */
+        .btn-report {
+            display: block; width: 100%; padding: 12px; margin-top: 10px;
+            background: transparent; color: var(--neon-cyan);
+            border: 1px solid var(--neon-cyan); border-radius: 4px;
+            text-align: center; text-decoration: none; font-weight: bold;
+            transition: 0.3s;
+        }
+
+        .btn-report:hover { background: var(--neon-cyan); color: #000; box-shadow: 0 0 15px rgba(0,255,204,0.5); }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #0d1117; }
+        ::-webkit-scrollbar-thumb { background: #30363d; }
     </style>
 </head>
-<body class="p-4 md:p-8 font-mono h-screen flex flex-col">
-    
-    <!-- 🟢 HEADER SECTION -->
-    <header class="flex flex-wrap justify-between items-center mb-6 pb-4 border-b border-gray-700 gap-4">
-        <div>
-            <h1 class="text-3xl md:text-4xl font-extrabold text-red-500 tracking-widest drop-shadow-md">PROJECT CHANAKYA</h1>
-            <h2 class="text-lg md:text-xl text-blue-400 tracking-[0.3em]">COMMAND CENTER</h2>
-        </div>
-        <div class="flex space-x-3 text-xs md:text-sm">
-            <div class="bg-blue-900/30 border border-blue-500 px-4 py-2 rounded text-blue-300 font-bold tracking-widest shadow-[0_0_10px_rgba(59,130,246,0.2)]">
-                CPU: ACTIVE
-            </div>
-            <div class="bg-green-900/30 border border-green-500 px-4 py-2 rounded text-green-400 font-bold flex items-center tracking-widest shadow-[0_0_10px_rgba(34,197,94,0.2)]">
-                <span class="h-2 w-2 bg-green-500 rounded-full mr-2 animate-pulse"></span> SYSTEM ONLINE
-            </div>
-        </div>
-    </header>
+<body>
 
-    <!-- 🟢 MAIN DASHBOARD GRID -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 flex-1 min-h-0">
-        
-        <!-- Left Column: Video Feed (Spans 2 columns on large screens) -->
-        <div class="col-span-1 lg:col-span-2 flex flex-col neon-border bg-gray-800 rounded-lg overflow-hidden">
-            <div class="bg-gray-900 px-4 py-3 flex justify-between items-center border-b border-gray-700">
-                <h3 class="text-sm font-bold text-gray-300 tracking-wider">
-                    <span class="text-red-500 inline-block mr-2 animate-pulse">●</span> REAL-TIME SURVEILLANCE
-                </h3>
-                <span class="text-xs text-gray-500 border border-gray-600 px-2 py-1 rounded">ZONE: ALPHA</span>
+    <div class="header">
+        <h1>PROJECT CHANAKYA <span style="font-weight: 300; font-size: 16px; color: var(--text-gray);">| MULTI-GRID</span></h1>
+        <div class="status-badge">DEFENCE NETWORK ACTIVE</div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="camera-grid">
+            <div class="video-card">
+                <h2>FEED: ALPHA (MASTER)</h2>
+                <img src="{{ url_for('video_feed_1') }}" class="feed-img" alt="Cam 1">
             </div>
             
-            <!-- Video Container -->
-            <div class="flex-1 bg-black relative flex items-center justify-center min-h-[400px]">
-                <img src="{{ url_for('video_feed') }}" alt="Live Feed" class="w-full h-full object-contain">
+            <div class="video-card">
+                <h2>FEED: BRAVO (PERIMETER)</h2>
+                <img src="{{ url_for('video_feed_2') }}" class="feed-img" alt="Cam 2">
             </div>
         </div>
 
-        <!-- Right Column: Database Logs & Metrics -->
-        <div class="col-span-1 flex flex-col gap-6 min-h-0">
-            
-            <!-- Latest Detections Panel -->
-            <div class="flex-1 flex flex-col neon-border bg-gray-800 rounded-lg overflow-hidden">
-                <div class="bg-gray-900 px-4 py-3 border-b border-gray-700">
-                    <h3 class="text-sm font-bold text-blue-400 tracking-wider">LATEST DETECTIONS</h3>
-                </div>
-                
-                <!-- 🎯 THIS IS WHERE JAVASCRIPT INJECTS DATA -->
-                <div id="detection-logs" class="flex-1 p-3 overflow-y-auto space-y-2 bg-gray-900/50">
-                    <div class="flex items-center justify-center h-full text-gray-500 text-sm animate-pulse">
-                        Awaiting database sync...
-                    </div>
+        <div class="side-panel">
+            <div class="logs-card">
+                <h2 style="font-size: 14px; color: var(--text-gray); margin-top: 0; border-bottom: 1px solid #333; padding-bottom: 10px;">TACTICAL LOGS</h2>
+                <div class="logs-container" id="logs">
+                    <div class="log-entry">Initializing secure connection...</div>
                 </div>
             </div>
 
-            <!-- Mini Status Panel -->
-            <div class="h-32 neon-border bg-gray-800 rounded-lg overflow-hidden flex flex-col">
-                <div class="bg-gray-900 px-4 py-2 border-b border-gray-700">
-                    <h3 class="text-xs font-bold text-gray-400 tracking-wider">DB CONNECTION</h3>
-                </div>
-                <div class="flex-1 p-4 flex flex-col justify-center">
-                    <p class="text-green-500 text-sm font-bold">✓ SQLite Active</p>
-                    <p class="text-gray-400 text-xs mt-1">Fetching new logs every 2.5s</p>
-                </div>
+            <div class="logs-card" style="height: auto;">
+                <h2 style="font-size: 14px; color: var(--text-gray); margin-top: 0;">INTELLIGENCE VAULT</h2>
+                <p style="font-size: 12px; color: #8b949e;">Generate end-to-end encrypted forensic report.</p>
+                <a href="/download_secure_report" class="btn-report">
+                    🔐 DOWNLOAD SECURE BRIEFING
+                </a>
             </div>
-
         </div>
     </div>
 
-    <!-- 🧠 DYNAMIC JAVASCRIPT (Fetches from /api/logs) -->
     <script>
-        function updateDashboard() {
+        function fetchLogs() {
             fetch('/api/logs')
                 .then(response => response.json())
                 .then(data => {
-                    const logContainer = document.getElementById('detection-logs');
-                    
-                    if (data.length > 0) {
-                        logContainer.innerHTML = ''; // Clear the "awaiting sync" message
-                        
-                        data.forEach(log => {
-                            // Logic for colors based on Threat Score
-                            let isHighThreat = log.threat > 50;
-                            let bgClass = isHighThreat ? 'bg-red-900/20 border-red-500/50' : 'bg-gray-800 border-gray-600';
-                            let textClass = isHighThreat ? 'text-red-400' : 'text-green-400';
-                            let icon = isHighThreat ? '⚠️' : '✅';
-                            
-                            // Build the HTML for a single log entry
-                            let logHTML = `
-                                <div class="border flex flex-col p-3 rounded-md shadow-sm ${bgClass}">
-                                    <div class="flex justify-between items-center mb-1">
-                                        <span class="text-[10px] text-gray-400">${log.timestamp}</span>
-                                        <span class="font-bold text-xs ${textClass}">Threat: ${log.threat}%</span>
-                                    </div>
-                                    <div class="text-white font-bold tracking-wider text-sm">
-                                        ${icon} ${log.object}
-                                    </div>
-                                </div>
-                            `;
-                            logContainer.innerHTML += logHTML;
-                        });
-                    }
-                })
-                .catch(error => console.error('DB Sync Error:', error));
-        }
+                    const logsDiv = document.getElementById('logs');
+                    logsDiv.innerHTML = '';
+                    data.forEach(log => {
+                        let threatClass = 'threat-safe';
+                        if (log.threat >= 80) threatClass = 'threat-critical';
+                        else if (log.threat >= 50) threatClass = 'threat-warning';
 
-        // Keep checking the database every 2.5 seconds
-        setInterval(updateDashboard, 2500);
-        
-        // Initial fetch when page loads
-        updateDashboard();
+                        logsDiv.innerHTML += `
+                            <div class="log-entry">
+                                <span>[${log.timestamp.split(' ')[1]}] ${log.object}</span>
+                                <span class="${threatClass}">T-${log.threat}%</span>
+                            </div>
+                        `;
+                    });
+                });
+        }
+        setInterval(fetchLogs, 2500);
+        fetchLogs();
     </script>
 </body>
 </html>

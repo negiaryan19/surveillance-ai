@@ -21,6 +21,8 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+database/
+snapshots/
 
 
 
@@ -28,3 +30,4 @@ Thumbs.db
 # source venv/bin/activate
 # pip install -r requirement.txt
 # python3 src/main.py
+.env

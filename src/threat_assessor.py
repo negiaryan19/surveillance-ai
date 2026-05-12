@@ -4,7 +4,8 @@ class ThreatAssessor:
         self.MIN_SCORE = 0
         self.MAX_SCORE = 100
 
-    def calculate_threat(self, zone_level, object_type, face_status, is_anomaly):
+    # 🔴 PHASE 5 UPDATE: Added is_crawling and has_weapon parameters
+    def calculate_threat(self, zone_level, object_type, face_status="UNKNOWN", is_anomaly=False, is_crawling=False, has_weapon=False):
         """
         Calculates a dynamic threat score based on multiple sensor inputs.
         Returns: (final_score, threat_category, reasons_list)
@@ -12,10 +13,17 @@ class ThreatAssessor:
         score = 0
         reasons = []
 
+        # 🚀 THE ULTIMATE THREAT: Weapon Rule overrides everything
+        if has_weapon:
+            return 100, "CRITICAL", ["CRITICAL: Lethal Weapon Detected!"]
+
         # 1. Zone Analysis (Where is the intruder?)
         if zone_level == "CRITICAL":
             score += 40
             reasons.append("Breached Critical Zone")
+        elif zone_level == "WARNING":  # Used in your web dashboard
+            score += 30
+            reasons.append("In Warning Zone")
         elif zone_level == "PERIMETER":
             score += 20
             reasons.append("In Perimeter")
@@ -46,6 +54,10 @@ class ThreatAssessor:
                 reasons.append("Unknown Identity")
 
         # 4. Behavioral / Anomaly Analysis (What are they doing?)
+        if is_crawling:
+            score += 50  # Crawling gives a massive threat bump
+            reasons.append("Suspicious Posture: Crawling/Prone")
+
         if is_anomaly:
             score += 40
             reasons.append("Anomalous/Suspicious Behavior")

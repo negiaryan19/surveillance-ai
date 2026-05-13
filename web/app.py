@@ -4,8 +4,9 @@ import os
 import threading
 from pathlib import Path
 from flask import Flask, render_template, Response, jsonify, send_file
+from flask_cors import CORS  # 👈 NEW: Added CORS for React connection
 import cv2
-import numpy as np  # 👈 Added Numpy for Standby Frame
+import numpy as np
 import atexit
 
 # --- PATH & IMPORT SETUP ---
@@ -30,6 +31,7 @@ except ImportError:
     ENCRYPTION_ENABLED = False
 
 app = Flask(__name__)
+CORS(app)  # 👈 NEW: This allows your React Command Center to talk to Flask
 
 SNAPSHOTS_DIR = BASE_DIR / "database/snapshots"
 os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
@@ -154,8 +156,8 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                             width, height = (x2 - x1), (y2 - y1)
                             if width > height * 1.2:
                                 is_crawling = True
-                        
                         face_status, is_auth, display_name = "UNKNOWN", False, obj_type
+
                         
                         if class_id == 0:
                             identity = face_id.identify(clean_frame, (x1, y1, x2, y2))
@@ -214,24 +216,20 @@ def index():
 def video_feed_1():
     return Response(generate_ai_frames(cam_alpha, "ALPHA"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
-# 👈 NEW STANDBY LOGIC APPLIED HERE
 @app.route('/video_feed_2')
 def video_feed_2():
-    # Agar 2nd camera (Bravo) connected nahi hai, toh CPU par load mat daalo
     if not cam_bravo.ret:
         def standby_frame():
-            # Ek black screen create karo 'OFFLINE' text ke saath
             black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
             cv2.putText(black_frame, "⚠️ BRAVO FEED OFFLINE", (120, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             cv2.putText(black_frame, "CONNECT SECOND CAMERA", (140, 280), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
             ret, buffer = cv2.imencode('.jpg', black_frame)
             while True:
                 yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-                time.sleep(1) # Refresh slowly to save CPU
+                time.sleep(1) 
         
         return Response(standby_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
     
-    # Agar 2nd camera connected hai, tabhi uspe AI process karo
     return Response(generate_ai_frames(cam_bravo, "BRAVO"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/api/logs')

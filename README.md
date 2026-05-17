@@ -114,4 +114,4 @@ The final outcome is a working full-stack AI surveillance prototype where the ba
 - Mobile notifications
 - User login and admin authentication
 - Better camera permission handling
-- Online deployment with hosted frontend and backend
+- Live deployment with hosted frontend and backend

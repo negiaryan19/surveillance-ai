@@ -435,7 +435,7 @@ function HardwareStatus({ setPage }) {
           </button>
           <h2>AI Surveillance Hardware Detail</h2>
         </header>
-        <div className="pcb-hero" />
+        <PcbHero />
         <section className="hardware-panel">
           <h3>HARDWARE STATUS</h3>
           <p className="active-link">ACTIVE - SECURE LINK ESTABLISHED</p>
@@ -452,6 +452,50 @@ function HardwareStatus({ setPage }) {
         <HardwareTabs setPage={setPage} />
       </div>
     </section>
+  );
+}
+
+function PcbHero() {
+  return (
+    <div className="pcb-hero" aria-label="AI-X90 surveillance PCB simulation">
+      <div className="laptop-feed">
+        <div className="laptop-sidebar" />
+        <div className="laptop-video">
+          <span className="feed-box person-a">PERSON: 98%</span>
+          <span className="feed-box person-b">PERSON: 96%</span>
+          <span className="feed-box vehicle">VEHICLE: 92%</span>
+        </div>
+      </div>
+      <svg className="pcb-traces" viewBox="0 0 520 430" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M45 330H168V228h62M55 292h82v-74h88M78 360h138V252h58M165 408V282h62M250 128V58h132v64M281 128V84h88M304 300v68h112M331 300v42h69M378 300v88h74M225 202H92V96h42M295 202h142V88h-30M264 128V30M356 202h102" />
+        <circle cx="45" cy="330" r="5" />
+        <circle cx="55" cy="292" r="5" />
+        <circle cx="78" cy="360" r="5" />
+        <circle cx="382" cy="58" r="5" />
+        <circle cx="452" cy="388" r="5" />
+        <circle cx="458" cy="202" r="5" />
+      </svg>
+      <div className="chip main-chip">
+        <span>AI-X90</span>
+      </div>
+      <div className="chip small chip-a" />
+      <div className="chip small chip-b" />
+      <div className="chip small chip-c" />
+      <div className="chip small chip-d" />
+      <i className="led led-one" />
+      <i className="led led-two" />
+      <i className="led led-three" />
+      <div className="india-flag">
+        <span />
+        <span />
+        <span />
+        <i />
+      </div>
+      <div className="pcb-actions">
+        <button type="button">ANALYZE PCB <span className="search-mark" /></button>
+        <button type="button">DIAGNOSTICS <SimpleIcon type="gear" /></button>
+      </div>
+    </div>
   );
 }
 

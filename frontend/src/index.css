@@ -129,7 +129,267 @@ button {
 }
 
 .hero-stage {
+  position: absolute;
+  inset: 0;
   min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(0, 255, 136, 0.16), transparent 16%),
+    radial-gradient(circle at 74% 30%, rgba(255, 170, 0, 0.28), transparent 23%),
+    radial-gradient(circle at 16% 18%, rgba(0, 200, 200, 0.18), transparent 28%),
+    linear-gradient(180deg, #07131c 0%, #071411 36%, #040608 100%);
+}
+
+.hero-stage::before,
+.hero-stage::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.hero-stage::before {
+  background:
+    linear-gradient(180deg, rgba(255, 170, 0, 0.16), transparent 34%),
+    radial-gradient(ellipse at 50% 22%, rgba(255, 255, 255, 0.16), transparent 5%),
+    radial-gradient(ellipse at 36% 20%, rgba(255, 255, 255, 0.08), transparent 7%),
+    radial-gradient(ellipse at 68% 24%, rgba(255, 255, 255, 0.08), transparent 9%),
+    linear-gradient(115deg, transparent 0 22%, rgba(0, 0, 0, 0.28) 28% 45%, transparent 51%),
+    linear-gradient(205deg, transparent 0 18%, rgba(0, 0, 0, 0.36) 31% 58%, transparent 64%);
+  mix-blend-mode: screen;
+  opacity: 0.78;
+}
+
+.hero-stage::after {
+  background:
+    radial-gradient(ellipse at 50% 84%, transparent 28%, rgba(0, 0, 0, 0.7) 72%),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.74), transparent 31%, transparent 70%, rgba(0, 0, 0, 0.8)),
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.015) 0 1px, transparent 1px 5px);
+}
+
+.storm-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 78% 34%, rgba(255, 170, 0, 0.42), transparent 24%),
+    radial-gradient(ellipse at 54% 22%, rgba(0, 230, 210, 0.12), transparent 29%),
+    linear-gradient(180deg, rgba(2, 8, 14, 0.15), rgba(0, 0, 0, 0.62));
+  filter: saturate(1.25);
+}
+
+.hero-drone {
+  position: absolute;
+  z-index: 5;
+  top: 16vh;
+  left: 50%;
+  width: min(42vw, 430px);
+  min-width: 260px;
+  transform: translateX(-50%);
+  filter: drop-shadow(0 22px 30px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 18px rgba(0, 255, 136, 0.18));
+  animation: hoverDrone 5.8s ease-in-out infinite;
+}
+
+.hero-drone path,
+.hero-drone circle,
+.hero-drone ellipse {
+  vector-effect: non-scaling-stroke;
+}
+
+.rotor-lines path,
+.landing-gear {
+  fill: none;
+  stroke: #030506;
+  stroke-linecap: round;
+  stroke-width: 8;
+}
+
+.rotor ellipse {
+  fill: #020404;
+  opacity: 0.84;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: rotorBlur 460ms linear infinite;
+}
+
+.rotor circle,
+.drone-body {
+  fill: #050707;
+  stroke: rgba(255, 255, 255, 0.12);
+  stroke-width: 1.2;
+}
+
+.drone-cockpit {
+  fill: #102226;
+  opacity: 0.92;
+}
+
+.scanner-core {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 13px var(--accent));
+  animation: scannerPulse 1.8s ease-in-out infinite;
+}
+
+.hero-scan-cone {
+  position: absolute;
+  z-index: 3;
+  top: 29vh;
+  left: 50%;
+  width: 34vw;
+  height: 54vh;
+  transform: translateX(-50%);
+  clip-path: polygon(48% 0, 56% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(0, 255, 136, 0.32), rgba(0, 255, 136, 0.06) 58%, transparent);
+  filter: blur(0.2px);
+  opacity: 0.68;
+  animation: conePulse 2.8s ease-in-out infinite;
+}
+
+.scan-beam {
+  position: absolute;
+  z-index: 4;
+  top: 29vh;
+  left: 50%;
+  width: 2px;
+  height: 54vh;
+  transform-origin: 50% 0;
+  background: linear-gradient(180deg, rgba(0, 255, 136, 0.88), rgba(0, 255, 136, 0.18), transparent);
+  box-shadow: 0 0 18px rgba(0, 255, 136, 0.9);
+  opacity: 0.4;
+  animation: beamPulse 2.2s ease-in-out infinite;
+}
+
+.beam-one {
+  transform: rotate(-21deg);
+}
+
+.beam-two {
+  transform: rotate(-7deg);
+  animation-delay: -0.45s;
+}
+
+.beam-three {
+  transform: rotate(7deg);
+  animation-delay: -0.9s;
+}
+
+.beam-four {
+  transform: rotate(21deg);
+  animation-delay: -1.35s;
+}
+
+.mountain-layer {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 48vh;
+  fill: #000;
+}
+
+.mountain-layer.rear {
+  bottom: 15vh;
+  height: 38vh;
+  opacity: 0.72;
+  filter: blur(0.4px);
+}
+
+.mountain-layer.front {
+  z-index: 2;
+  height: 34vh;
+}
+
+.rock-field {
+  position: absolute;
+  z-index: 3;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 28vh;
+  background:
+    radial-gradient(ellipse at 10% 85%, #101512 0 4%, transparent 9%),
+    radial-gradient(ellipse at 20% 72%, #101713 0 5%, transparent 10%),
+    radial-gradient(ellipse at 42% 78%, #0f1712 0 7%, transparent 13%),
+    radial-gradient(ellipse at 62% 84%, #0e1510 0 6%, transparent 12%),
+    radial-gradient(ellipse at 78% 73%, #0f1812 0 5%, transparent 10%),
+    radial-gradient(ellipse at 92% 86%, #0e1510 0 6%, transparent 12%),
+    linear-gradient(180deg, transparent, #020503 42%);
+}
+
+.particle-field {
+  position: absolute;
+  z-index: 4;
+  inset: 0;
+  pointer-events: none;
+}
+
+.particle-field i {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: var(--size);
+  height: var(--size);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px rgba(0, 255, 136, 0.9);
+  opacity: 0;
+  animation: particleDrift var(--duration) linear infinite;
+  animation-delay: var(--delay);
+}
+
+.detection-field {
+  position: absolute;
+  z-index: 6;
+  inset: 0;
+  pointer-events: none;
+}
+
+.detection-box {
+  position: absolute;
+  left: var(--left);
+  top: var(--top);
+  width: var(--width);
+  height: var(--height);
+  border: 1px solid rgba(0, 255, 136, 0.88);
+  box-shadow: 0 0 12px rgba(0, 255, 136, 0.45), inset 0 0 16px rgba(0, 255, 136, 0.08);
+  transform-origin: top left;
+  animation: detectionPulse 4.6s ease-in-out infinite;
+  animation-delay: var(--delay);
+}
+
+.detection-box::before,
+.detection-box::after {
+  content: '';
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  border-color: var(--accent);
+  border-style: solid;
+}
+
+.detection-box::before {
+  top: -4px;
+  left: -4px;
+  border-width: 2px 0 0 2px;
+}
+
+.detection-box::after {
+  right: -4px;
+  bottom: -4px;
+  border-width: 0 2px 2px 0;
+}
+
+.detection-box b {
+  position: absolute;
+  top: -19px;
+  left: -1px;
+  padding: 2px 4px;
+  background: rgba(0, 16, 10, 0.82);
+  color: var(--accent);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0;
+  white-space: nowrap;
+  text-shadow: 0 0 8px rgba(0, 255, 136, 0.9);
 }
 
 .hero-copy {
@@ -149,11 +409,12 @@ button {
   margin: 0;
   color: var(--white);
   font-family: 'Arial Black', Impact, sans-serif;
-  font-size: clamp(44px, 6vw, 80px);
+  font-size: 80px;
   font-weight: 900;
-  letter-spacing: -0.02em;
+  letter-spacing: 0;
   line-height: 0.94;
   text-transform: uppercase;
+  text-shadow: 0 9px 34px rgba(0, 0, 0, 0.88);
 }
 
 .hero-copy h1 span {
@@ -218,6 +479,8 @@ button {
   width: 1px;
   height: 48px;
   background: rgba(255, 255, 255, 0.6);
+  transform-origin: top;
+  animation: scrollLine 1.7s ease-in-out infinite;
 }
 
 .stats-strip {
@@ -522,6 +785,97 @@ button {
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+@keyframes hoverDrone {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
+}
+
+@keyframes rotorBlur {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes scannerPulse {
+  0%,
+  100% {
+    opacity: 0.7;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes conePulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes beamPulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.8;
+  }
+}
+
+@keyframes particleDrift {
+  0% {
+    transform: translate3d(0, 34px, 0);
+    opacity: 0;
+  }
+  18%,
+  76% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(12px, -94px, 0);
+    opacity: 0;
+  }
+}
+
+@keyframes detectionPulse {
+  0%,
+  100% {
+    opacity: 0.18;
+    transform: scale(var(--scale, 1)) translateY(3px);
+  }
+  18%,
+  68% {
+    opacity: 1;
+    transform: scale(var(--scale, 1)) translateY(0);
+  }
+  84% {
+    opacity: 0;
+  }
+}
+
+@keyframes scrollLine {
+  0% {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  35% {
+    opacity: 1;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 0;
+  }
+}
+
 @media (max-width: 860px) {
   .site-nav {
     min-height: 66px;
@@ -546,6 +900,35 @@ button {
 
   .hero-copy {
     padding: 19vh 24px 150px;
+  }
+
+  .hero-copy h1 {
+    font-size: 44px;
+  }
+
+  .hero-copy p:not(.eyebrow) {
+    max-width: 340px;
+    font-size: 12px;
+  }
+
+  .hero-drone {
+    top: 14vh;
+    width: 290px;
+    opacity: 0.74;
+  }
+
+  .hero-scan-cone {
+    top: 27vh;
+    width: 68vw;
+  }
+
+  .scan-beam {
+    top: 27vh;
+    height: 48vh;
+  }
+
+  .detection-box {
+    --scale: 0.74;
   }
 
   .stats-strip {

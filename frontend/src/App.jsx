@@ -29,6 +29,28 @@ const SPECS = [
   ['Detection', 'YOLOv8-M (Real-Time)'],
 ];
 
+const PARTICLES = Array.from({ length: 40 }, (_, index) => ({
+  id: `particle-${index}`,
+  left: `${(index * 19) % 100}%`,
+  top: `${18 + ((index * 13) % 76)}%`,
+  delay: `${(index % 12) * -0.7}s`,
+  duration: `${10 + (index % 7)}s`,
+  size: `${2 + (index % 3)}px`,
+}));
+
+const DETECTIONS = [
+  { label: 'PERSON 94%', left: '13%', top: '70%', width: '72px', height: '132px' },
+  { label: 'PERSON 91%', left: '24%', top: '73%', width: '86px', height: '118px' },
+  { label: 'VEHICLE 87%', left: '43%', top: '68%', width: '128px', height: '78px' },
+  { label: 'PERSON 89%', left: '57%', top: '74%', width: '62px', height: '105px' },
+  { label: 'VEHICLE 82%', left: '68%', top: '67%', width: '162px', height: '82px' },
+  { label: 'PERSON 96%', left: '78%', top: '70%', width: '54px', height: '118px' },
+  { label: 'PERSON 78%', left: '60%', top: '63%', width: '42px', height: '78px' },
+  { label: 'TARGET 72%', left: '36%', top: '61%', width: '34px', height: '52px' },
+  { label: 'PERSON 90%', left: '86%', top: '66%', width: '39px', height: '86px' },
+  { label: 'VEHICLE 85%', left: '8%', top: '68%', width: '170px', height: '94px' },
+];
+
 function ShieldIcon({ className = '' }) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -143,7 +165,53 @@ function App() {
 function HeroLanding({ setPage }) {
   return (
     <section className="hero-screen" aria-label="Project Chanakya landing page">
-      <div className="hero-stage" />
+      <div className="hero-stage" aria-hidden="true">
+        <div className="storm-glow" />
+        <div className="hero-scan-cone" />
+        <div className="scan-beam beam-one" />
+        <div className="scan-beam beam-two" />
+        <div className="scan-beam beam-three" />
+        <div className="scan-beam beam-four" />
+        <div className="particle-field">
+          {PARTICLES.map((particle) => (
+            <i
+              key={particle.id}
+              style={{
+                '--left': particle.left,
+                '--top': particle.top,
+                '--delay': particle.delay,
+                '--duration': particle.duration,
+                '--size': particle.size,
+              }}
+            />
+          ))}
+        </div>
+        <HeroDrone />
+        <svg className="mountain-layer rear" viewBox="0 0 1440 460" preserveAspectRatio="none">
+          <path d="M0 254 92 186 185 226 294 136 390 213 517 94 661 214 782 122 917 206 1044 102 1169 199 1288 125 1440 214v246H0Z" />
+        </svg>
+        <svg className="mountain-layer front" viewBox="0 0 1440 390" preserveAspectRatio="none">
+          <path d="M0 218 76 130 141 184 231 116 315 178 402 86 517 190 630 134 709 204 831 96 942 192 1018 128 1135 216 1236 116 1328 180 1440 105v285H0Z" />
+        </svg>
+        <div className="rock-field" />
+        <div className="detection-field">
+          {DETECTIONS.map((box, index) => (
+            <span
+              className="detection-box"
+              key={`${box.label}-${index}`}
+              style={{
+                '--left': box.left,
+                '--top': box.top,
+                '--width': box.width,
+                '--height': box.height,
+                '--delay': `${index * -0.9}s`,
+              }}
+            >
+              <b>{box.label}</b>
+            </span>
+          ))}
+        </div>
+      </div>
       <div className="hero-copy">
         <p className="eyebrow">AUTONOMOUS BORDER INTELLIGENCE</p>
         <h1>
@@ -173,6 +241,42 @@ function HeroLanding({ setPage }) {
         ))}
       </div>
     </section>
+  );
+}
+
+function HeroDrone() {
+  const rotors = [
+    [44, 44],
+    [88, 22],
+    [176, 22],
+    [220, 44],
+    [72, 96],
+    [192, 96],
+  ];
+
+  return (
+    <svg className="hero-drone" viewBox="0 0 264 132" role="img" aria-label="Military hexacopter drone">
+      <defs>
+        <radialGradient id="droneGlow" cx="50%" cy="50%" r="60%">
+          <stop offset="0%" stopColor="#00ff88" stopOpacity="0.95" />
+          <stop offset="100%" stopColor="#00ff88" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+      <g className="rotor-lines">
+        <path d="M88 62 44 44M93 50 88 22M171 50l5-28M176 62l44-18M96 72 72 96M168 72l24 24" />
+      </g>
+      {rotors.map(([cx, cy]) => (
+        <g className="rotor" key={`${cx}-${cy}`} transform={`translate(${cx} ${cy})`}>
+          <ellipse cx="0" cy="0" rx="29" ry="5" />
+          <circle cx="0" cy="0" r="6" />
+        </g>
+      ))}
+      <path className="drone-body" d="M91 56c12-20 70-20 82 0l17 38H74l17-38Z" />
+      <path className="drone-cockpit" d="M112 54c10-9 30-9 40 0l7 18h-54l7-18Z" />
+      <path className="landing-gear" d="M92 90 70 122M172 90l22 32M82 119h-23M182 119h23" />
+      <circle className="scanner-core" cx="132" cy="91" r="15" />
+      <circle cx="132" cy="91" r="24" fill="url(#droneGlow)" />
+    </svg>
   );
 }
 

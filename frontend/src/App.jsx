@@ -15,10 +15,10 @@ const STATS = [
 ];
 
 const CAMERAS = [
-  { id: 'CAM_01', label: 'ACTIVE' },
-  { id: 'CAM_02', label: 'OFFLINE' },
-  { id: 'CAM_03', label: 'ACTIVE' },
-  { id: 'CAM_04', label: 'MOTION' },
+  { id: 'CAM_01', label: 'ACTIVE', status: 'active' },
+  { id: 'CAM_02', label: 'OFFLINE', status: 'offline' },
+  { id: 'CAM_03', label: 'ACTIVE', status: 'active' },
+  { id: 'CAM_04', label: 'MOTION', status: 'motion' },
 ];
 
 const SPECS = [
@@ -312,21 +312,93 @@ function OperationsCommandCenter({ time, setPage }) {
 }
 
 function MonitorTerrain() {
-  return <article className="monitor-card monitor-terrain" />;
+  return (
+    <article className="monitor-card monitor-terrain" aria-label="Aerial terrain monitor">
+      <div className="monitor-title">
+        <span>AERIAL TERRAIN VIEW</span>
+        <SimpleIcon type="drone" />
+      </div>
+      <svg className="terrain-map" viewBox="0 0 520 360" preserveAspectRatio="none" aria-hidden="true">
+        <rect width="520" height="360" />
+        {Array.from({ length: 48 }, (_, index) => (
+          <rect
+            key={index}
+            x={(index * 47) % 520}
+            y={(index * 31) % 360}
+            width={28 + (index % 5) * 18}
+            height={8 + (index % 4) * 7}
+            opacity={0.08 + (index % 6) * 0.025}
+            transform={`rotate(${(index % 7) * 9}, ${(index * 47) % 520}, ${(index * 31) % 360})`}
+          />
+        ))}
+        <path d="M-40 300C70 250 98 105 190 126c92 20 91 114 179 107 90-8 114-127 206-142" />
+        <path d="M-10 210C60 186 86 80 177 85c91 6 109 91 188 82 82-9 96-104 187-105" />
+      </svg>
+      <div className="terrain-box vehicle-box">
+        <b>TARGET DETECTED: VEHICLE</b>
+      </div>
+      <div className="terrain-box coordinate-box">
+        <b>COORDINATES: 32°N 76°E</b>
+      </div>
+      <div className="terrain-box threat-box">
+        <b>THREAT LEVEL: MODERATE</b>
+      </div>
+      <i className="thermal-spot spot-a" />
+      <i className="thermal-spot spot-b" />
+      <i className="thermal-spot spot-c" />
+      <div className="monitor-scanline" />
+    </article>
+  );
 }
 
 function MonitorHeatmap() {
-  return <article className="monitor-card monitor-heatmap" />;
+  return (
+    <article className="monitor-card monitor-heatmap" aria-label="Heatmap and drone monitor">
+      <div className="monitor-title">
+        <span>HEATMAP + DRONE VIEW</span>
+        <span>ACTIVE // DRONE_3</span>
+      </div>
+      <div className="heat-grid" />
+      <div className="heat-blob primary" />
+      <div className="heat-blob secondary" />
+      <svg className="map-lines" viewBox="0 0 560 380" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M0 238C80 202 92 126 171 118c105-10 138 102 229 76 96-28 113-147 223-152 80-3 111 50 157 69" />
+        <path d="M32 314C118 268 121 192 209 190c92-1 125 78 213 55 89-24 120-102 210-90" />
+        <path d="M94 0v380M208 0v380M322 0v380M436 0v380M0 82h560M0 190h560M0 302h560" />
+      </svg>
+      <svg className="center-drone" viewBox="0 0 180 90" aria-hidden="true">
+        <path d="M62 43 28 30M68 35 58 14M118 35l10-21M118 43l34-13M75 48h30l15 24H60l15-24Z" />
+        <ellipse cx="26" cy="29" rx="20" ry="4" />
+        <ellipse cx="58" cy="14" rx="18" ry="4" />
+        <ellipse cx="128" cy="14" rx="18" ry="4" />
+        <ellipse cx="154" cy="29" rx="20" ry="4" />
+      </svg>
+      <div className="face-card">
+        <div className="face-placeholder" />
+        <div>
+          <b>FACIAL RECOGNITION: MATCH FOUND</b>
+          <span>IDENTITY: UNKNOWN SUBJECT</span>
+          <span>THREAT: HIGH</span>
+          <span>LAST SEEN: SECTOR 20</span>
+        </div>
+      </div>
+      <div className="monitor-scanline" />
+    </article>
+  );
 }
 
 function MonitorGrid() {
   return (
-    <article className="monitor-card monitor-grid">
+    <article className="monitor-card monitor-grid" aria-label="Multi-camera grid monitor">
       {CAMERAS.map((camera) => (
-        <div className="camera-tile" key={camera.id}>
+        <div className={`camera-tile ${camera.status}`} key={camera.id}>
+          <i />
+          <div className="camera-horizon" />
+          <div className="camera-target" />
           <span>{camera.id} {camera.label}</span>
         </div>
       ))}
+      <div className="monitor-scanline" />
     </article>
   );
 }

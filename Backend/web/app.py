@@ -105,6 +105,8 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
     last_log_time = 0
     last_center = None
 
+    tracked_objects = {}
+
     while True:
         ret, raw_frame = camera.read()
         if not ret or raw_frame is None:
@@ -128,36 +130,44 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
         is_live, blinks = liveness_detector.check_liveness(clean_frame)
         cv2.putText(display_frame, f"EAR Blinks: {blinks}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
         
-        # 2. DETECTION LAYER (Protected by AI Lock, Every 5th frame)
-        if frame_count % 5 == 0:
-            latest_boxes = []
-            
-            with ai_lock:
-                detections = model(clean_frame, verbose=False)
-            
-            current_center = None
-            largest_area = 0
-            
-            for detection in detections:
-                for box in detection.boxes:
-                    class_id = int(box.cls[0])
-                    conf = float(box.conf[0])
+        # 2. DETECTION LAYER WITH TRACKING (Protected by AI Lock, Every frame)
+        with ai_lock:
+            detections = model.track(clean_frame, persist=True, tracker="bytetrack.yaml", verbose=False)
+        
+        latest_boxes = []
+        current_center = None
+        largest_area = 0
+        
+        do_heavy_calc = (frame_count % 5 == 0)
+        
+        for detection in detections:
+            if detection.boxes is None or detection.boxes.id is None:
+                continue
+                
+            for box in detection.boxes:
+                class_id = int(box.cls[0])
+                conf = float(box.conf[0])
+                
+                if class_id in THREAT_CLASSES and conf > CONFIDENCE_LIMIT:
+                    x1, y1, x2, y2 = map(int, box.xyxy[0])
+                    obj_type = THREAT_CLASSES[class_id]
+                    cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+                    zone_level = "SAFE" if cx < 320 else "WARNING"
                     
-                    if class_id in THREAT_CLASSES and conf > CONFIDENCE_LIMIT:
-                        x1, y1, x2, y2 = map(int, box.xyxy[0])
-                        obj_type = THREAT_CLASSES[class_id]
-                        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
-                        zone_level = "SAFE" if cx < 320 else "WARNING"
+                    track_id = int(box.id[0]) if box.id is not None else -1
+                    if track_id == -1:
+                        continue
                         
-                        is_crawling = False
-                        has_weapon = True if class_id == 43 else False
-                        
-                        if obj_type == "Person":
-                            width, height = (x2 - x1), (y2 - y1)
-                            if width > height * 1.2:
-                                is_crawling = True
+                    is_crawling = False
+                    has_weapon = True if class_id == 43 else False
+                    
+                    if obj_type == "Person":
+                        width, height = (x2 - x1), (y2 - y1)
+                        if width > height * 1.2:
+                            is_crawling = True
+                            
+                    if do_heavy_calc or track_id not in tracked_objects:
                         face_status, is_auth, display_name = "UNKNOWN", False, obj_type
-
                         
                         if class_id == 0:
                             identity = face_id.identify(clean_frame, (x1, y1, x2, y2))
@@ -177,23 +187,42 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                         if is_crawling: prefix = "🕷️ CRAWL "
                         if has_weapon: prefix = "🔪 LETHAL "
                         
-                        label = f"{prefix}{display_name} | {score}%"
-                        latest_boxes.append((x1, y1, x2, y2, box_color, label, cx, cy))
-
-                        area = (x2 - x1) * (y2 - y1)
-                        if area > largest_area:
-                            largest_area = area
-                            current_center = (cx, cy)
-
-                        # Telemetry & DB
-                        current_time = time.time()
-                        if (current_time - last_log_time > 5) and (score >= 70) and not is_auth: 
-                            snap_path = str(SNAPSHOTS_DIR / f"alert_{cam_name}_{int(current_time)}.jpg")
-                            cv2.imwrite(snap_path, display_frame)
-                            db.log_incident(object_type=f"[{cam_name}] {display_name}", threat_score=score, zone_level=zone_level, image_path=snap_path)
-                            send_telegram_alert(f"{display_name} ({cam_name})", score, snap_path)
-                            last_log_time = current_time
+                        label = f"{prefix}ID:{track_id} {display_name} | {score}%"
+                        
+                        tracked_objects[track_id] = {
+                            "color": box_color,
+                            "label": label,
+                            "score": score,
+                            "is_auth": is_auth,
+                            "display_name": display_name
+                        }
+                    else:
+                        cached = tracked_objects[track_id]
+                        box_color = cached["color"]
+                        label = cached["label"]
+                        score = cached["score"]
+                        is_auth = cached["is_auth"]
+                        display_name = cached["display_name"]
+                        
+                        if not is_auth and not is_crawling and not has_weapon:
+                            box_color = (0, 0, 255) if score >= 80 else (0, 165, 255)
                             
+                    latest_boxes.append((x1, y1, x2, y2, box_color, label, cx, cy))
+
+                    area = (x2 - x1) * (y2 - y1)
+                    if area > largest_area:
+                        largest_area = area
+                        current_center = (cx, cy)
+
+                    # Telemetry & DB
+                    current_time = time.time()
+                    if (current_time - last_log_time > 5) and (score >= 70) and not is_auth: 
+                        snap_path = str(SNAPSHOTS_DIR / f"alert_{cam_name}_{int(current_time)}.jpg")
+                        cv2.imwrite(snap_path, display_frame)
+                        db.log_incident(object_type=f"[{cam_name}] {display_name} (ID:{track_id})", threat_score=score, zone_level=zone_level, image_path=snap_path)
+                        send_telegram_alert(f"{display_name} ID:{track_id} ({cam_name})", score, snap_path)
+                        last_log_time = current_time
+                        
             if current_center is not None: last_center = current_center
 
         # Render Tracking Box
@@ -212,23 +241,32 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
 def index():
     return render_template('index.html')
 
+def generate_standby_frames(message, instruction):
+    black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
+    cv2.putText(black_frame, message, (120, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+    cv2.putText(black_frame, instruction, (140, 280), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
+    ret, buffer = cv2.imencode('.jpg', black_frame)
+    while True:
+        yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
+        time.sleep(1)
+
 @app.route('/video_feed_1')
 def video_feed_1():
+    if not cam_alpha.ret:
+        return Response(
+            generate_standby_frames("ALPHA FEED OFFLINE", "ALLOW CAMERA ACCESS"),
+            mimetype='multipart/x-mixed-replace; boundary=frame'
+        )
+
     return Response(generate_ai_frames(cam_alpha, "ALPHA"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 @app.route('/video_feed_2')
 def video_feed_2():
     if not cam_bravo.ret:
-        def standby_frame():
-            black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
-            cv2.putText(black_frame, "⚠️ BRAVO FEED OFFLINE", (120, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            cv2.putText(black_frame, "CONNECT SECOND CAMERA", (140, 280), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
-            ret, buffer = cv2.imencode('.jpg', black_frame)
-            while True:
-                yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-                time.sleep(1) 
-        
-        return Response(standby_frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+        return Response(
+            generate_standby_frames("BRAVO FEED OFFLINE", "CONNECT SECOND CAMERA"),
+            mimetype='multipart/x-mixed-replace; boundary=frame'
+        )
     
     return Response(generate_ai_frames(cam_bravo, "BRAVO"), mimetype='multipart/x-mixed-replace; boundary=frame')
 
@@ -249,5 +287,5 @@ def download_secure():
         return f"Report Failed: {e}", 500
 
 if __name__ == '__main__':
-    print("🌐 Project Chanakya Web Core ONLINE on Port 5003")
-    app.run(host='127.0.0.1', port=5003, debug=True, use_reloader=False)
+    print("🌐 Project Chanakya Web Core ONLINE on Port 5001")
+    app.run(host='127.0.0.1', port=5001, debug=True, use_reloader=False)

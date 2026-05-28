@@ -45,7 +45,11 @@ def generate_pdf_report():
     # 1. Connect and Fetch
     conn = sqlite3.connect(str(db_path))
     cursor = conn.cursor()
-    cursor.execute("SELECT timestamp, object_type, threat_score, zone_level FROM logs ORDER BY timestamp DESC")
+    cursor.execute("""
+        SELECT timestamp, object_type, threat_score, zone_level
+        FROM incidents
+        ORDER BY timestamp DESC
+    """)
     rows = cursor.fetchall()
     conn.close()
 

@@ -17,6 +17,7 @@ from ultralytics import YOLO
 from src.threat_assessor import ThreatAssessor
 from src.face_recognizer import FaceRecognizer
 from src.liveness_detector import LivenessDetector
+from src.emotion_detector import EmotionDetector
 from src.database_manager import DatabaseManager
 from src.telegram_bot import send_telegram_alert
 from src.report_generator import generate_pdf_report
@@ -88,6 +89,7 @@ model = YOLO(MODEL_PATH)
 pose_model = YOLO('yolov8n-pose.pt')      
 face_id = FaceRecognizer(str(BASE_DIR / "database/known_faces"), str(BASE_DIR / "database/face_encodings.pkl"))
 liveness_detector = LivenessDetector()
+emotion_detector = EmotionDetector()
 threat_engine = ThreatAssessor()
 
 THREAT_CLASSES = {
@@ -168,9 +170,14 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                             
                     if do_heavy_calc or track_id not in tracked_objects:
                         face_status, is_auth, display_name = "UNKNOWN", False, obj_type
+                        emotion_label, emotion_confidence = "N/A", 0
                         
                         if class_id == 0:
                             identity = face_id.identify(clean_frame, (x1, y1, x2, y2))
+                            emotion_result = emotion_detector.detect(clean_frame, (x1, y1, x2, y2))
+                            emotion_label = emotion_result["emotion"]
+                            emotion_confidence = emotion_result["confidence"]
+
                             if identity not in ["Unknown", None]:
                                 display_name = identity
                                 face_status = "KNOWN" if is_live else "SPOOF"
@@ -187,14 +194,17 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                         if is_crawling: prefix = "🕷️ CRAWL "
                         if has_weapon: prefix = "🔪 LETHAL "
                         
-                        label = f"{prefix}ID:{track_id} {display_name} | {score}%"
+                        emotion_text = f" | {emotion_label} {emotion_confidence}%" if class_id == 0 else ""
+                        label = f"{prefix}ID:{track_id} {display_name}{emotion_text} | {score}%"
                         
                         tracked_objects[track_id] = {
                             "color": box_color,
                             "label": label,
                             "score": score,
                             "is_auth": is_auth,
-                            "display_name": display_name
+                            "display_name": display_name,
+                            "emotion": emotion_label,
+                            "emotion_confidence": emotion_confidence
                         }
                     else:
                         cached = tracked_objects[track_id]
@@ -203,6 +213,8 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                         score = cached["score"]
                         is_auth = cached["is_auth"]
                         display_name = cached["display_name"]
+                        emotion_label = cached.get("emotion", "N/A")
+                        emotion_confidence = cached.get("emotion_confidence", 0)
                         
                         if not is_auth and not is_crawling and not has_weapon:
                             box_color = (0, 0, 255) if score >= 80 else (0, 165, 255)
@@ -219,8 +231,14 @@ def generate_ai_frames(camera, cam_name="ALPHA"):
                     if (current_time - last_log_time > 5) and (score >= 70) and not is_auth: 
                         snap_path = str(SNAPSHOTS_DIR / f"alert_{cam_name}_{int(current_time)}.jpg")
                         cv2.imwrite(snap_path, display_frame)
-                        db.log_incident(object_type=f"[{cam_name}] {display_name} (ID:{track_id})", threat_score=score, zone_level=zone_level, image_path=snap_path)
-                        send_telegram_alert(f"{display_name} ID:{track_id} ({cam_name})", score, snap_path)
+                        emotion_context = f", Emotion:{emotion_label} {emotion_confidence}%" if class_id == 0 else ""
+                        db.log_incident(
+                            object_type=f"[{cam_name}] {display_name} (ID:{track_id}{emotion_context})",
+                            threat_score=score,
+                            zone_level=zone_level,
+                            image_path=snap_path
+                        )
+                        send_telegram_alert(f"{display_name} ID:{track_id}{emotion_context} ({cam_name})", score, snap_path)
                         last_log_time = current_time
                         
             if current_center is not None: last_center = current_center
@@ -274,6 +292,25 @@ def video_feed_2():
 def get_logs():
     logs = db.get_recent_logs(limit=15)
     return jsonify([{"timestamp": l[0], "object": l[1], "threat": l[2], "zone": l[3]} for l in logs])
+
+@app.route('/api/modules')
+def get_modules():
+    known_people = sorted(set(face_id.known_names))
+    return jsonify({
+        "emotion": {
+            "status": "enabled",
+            "engine": "facial-landmark-signal",
+            "classes": ["Neutral", "Focused", "Happy", "Surprised", "Tired", "Unknown"]
+        },
+        "knownFaces": {
+            "count": len(known_people),
+            "names": known_people
+        },
+        "streams": {
+            "alpha": "online" if cam_alpha.ret else "offline",
+            "bravo": "online" if cam_bravo.ret else "offline"
+        }
+    })
 
 @app.route('/download_secure_report')
 def download_secure():

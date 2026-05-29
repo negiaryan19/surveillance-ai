@@ -1,7 +1,6 @@
 import face_recognition
 import cv2
 import os
-import glob
 import pickle
 
 class FaceRecognizer:
@@ -13,48 +12,83 @@ class FaceRecognizer:
         self.load_known_faces()
 
     def load_known_faces(self):
-        """Database se photos load karke unke encodings banata hai."""
+        """Loads known faces from loose files or person-wise folders."""
+        image_files = self._scan_known_face_images()
+        signature = self._database_signature(image_files)
         
-        # 1. Check if encoding file already exists
         if os.path.exists(self.encoding_path):
             with open(self.encoding_path, 'rb') as f:
                 data = pickle.load(f)
+            if data.get("signature") == signature:
                 self.known_encodings = data["encodings"]
                 self.known_names = data["names"]
-            print(f"✅ Loaded {len(self.known_names)} authorized faces from cache.")
+                print(f"✅ Loaded {len(self.known_names)} authorized faces from cache.")
+                return
+
+            print("🔁 Known face database changed. Rebuilding encodings...")
         else:
             print("🔨 Building face database... (First time setup)")
             
-            # 2. Iterate through image folder
-            for image_path in glob.glob(os.path.join(self.db_path, "*")):
-                # DEBUG: Check if file is being found
-                print(f"DEBUG: Found file {image_path}")
+        for name, image_path in image_files:
+            try:
+                image = face_recognition.load_image_file(image_path)
+                encodings = face_recognition.face_encodings(image)
                 
-                if image_path.lower().endswith(('.png', '.jpg', '.jpeg')):
-                    name = os.path.basename(image_path).split('.')[0]
-                    
-                    try:
-                        image = face_recognition.load_image_file(image_path)
-                        encodings = face_recognition.face_encodings(image)
-                        
-                        if len(encodings) > 0:
-                            self.known_encodings.append(encodings[0])
-                            self.known_names.append(name)
-                        else:
-                            print(f"⚠️ Warning: No face found in {image_path}")
-                    except Exception as e:
-                        print(f"❌ Error processing {image_path}: {e}")
+                if len(encodings) > 0:
+                    self.known_encodings.append(encodings[0])
+                    self.known_names.append(name)
+                else:
+                    print(f"⚠️ Warning: No face found in {image_path}")
+            except Exception as e:
+                print(f"❌ Error processing {image_path}: {e}")
             
-            # 3. Save encodings for next time
-            if self.known_encodings:
-                with open(self.encoding_path, 'wb') as f:
-                    pickle.dump({"encodings": self.known_encodings, "names": self.known_names}, f)
-                print(f"✅ Database built successfully. Loaded {len(self.known_names)} faces.")
-            else:
-                print("❌ ERROR: No faces were loaded. Check your database folder!")
+        if self.known_encodings:
+            with open(self.encoding_path, 'wb') as f:
+                pickle.dump(
+                    {"encodings": self.known_encodings, "names": self.known_names, "signature": signature},
+                    f
+                )
+            print(f"✅ Database built successfully. Loaded {len(self.known_names)} faces.")
+        else:
+            print("❌ ERROR: No faces were loaded. Check your database folder!")
+
+    def _scan_known_face_images(self):
+        if not os.path.isdir(self.db_path):
+            os.makedirs(self.db_path, exist_ok=True)
+            return []
+
+        image_files = []
+        valid_extensions = ('.png', '.jpg', '.jpeg')
+
+        for root, dirs, files in os.walk(self.db_path):
+            dirs[:] = [folder for folder in dirs if not folder.startswith(".")]
+            for file_name in files:
+                if file_name.startswith(".") or not file_name.lower().endswith(valid_extensions):
+                    continue
+
+                image_path = os.path.join(root, file_name)
+                relative_root = os.path.relpath(root, self.db_path)
+                if relative_root == ".":
+                    name = os.path.splitext(file_name)[0]
+                else:
+                    name = os.path.basename(root)
+
+                image_files.append((name.replace("_", " ").strip(), image_path))
+
+        return sorted(image_files, key=lambda item: item[1])
+
+    def _database_signature(self, image_files):
+        if not image_files:
+            return {"count": 0, "latest_mtime": 0}
+
+        latest_mtime = max(os.path.getmtime(image_path) for _, image_path in image_files)
+        return {"count": len(image_files), "latest_mtime": latest_mtime}
 
     def identify(self, frame, bbox):
         """Camera frame mein face ko identify karta hai."""
+        if not self.known_encodings:
+            return "Unknown"
+
         x1, y1, x2, y2 = bbox
         
         # Safe crop logic

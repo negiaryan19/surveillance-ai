@@ -9,22 +9,28 @@ function App() {
   const [lastUpdated, setLastUpdated] = useState('');
   const [error, setError] = useState('');
   const [feedVersion, setFeedVersion] = useState(0);
+  const [modules, setModules] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    const fetchLogs = async () => {
+    const fetchDashboardData = async () => {
       try {
-        const response = await fetch(`${BACKEND_URL}/api/logs`);
+        const [logsResponse, modulesResponse] = await Promise.all([
+          fetch(`${BACKEND_URL}/api/logs`),
+          fetch(`${BACKEND_URL}/api/modules`).catch(() => null),
+        ]);
 
-        if (!response.ok) {
-          throw new Error(`Backend returned ${response.status}`);
+        if (!logsResponse.ok) {
+          throw new Error(`Backend returned ${logsResponse.status}`);
         }
 
-        const data = await response.json();
+        const data = await logsResponse.json();
+        const moduleData = modulesResponse?.ok ? await modulesResponse.json() : null;
 
         if (isMounted) {
           setLogs(Array.isArray(data) ? data : []);
+          setModules(moduleData);
           setStatus('online');
           setError('');
           setLastUpdated(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
@@ -37,8 +43,8 @@ function App() {
       }
     };
 
-    fetchLogs();
-    const intervalId = window.setInterval(fetchLogs, REFRESH_MS);
+    fetchDashboardData();
+    const intervalId = window.setInterval(fetchDashboardData, REFRESH_MS);
 
     return () => {
       isMounted = false;
@@ -49,6 +55,8 @@ function App() {
   const highestThreat = logs.reduce((max, log) => Math.max(max, Number(log.threat) || 0), 0);
   const activeZones = new Set(logs.map((log) => log.zone).filter(Boolean)).size;
   const statusLabel = status === 'online' ? 'Backend Online' : status === 'offline' ? 'Backend Offline' : 'Checking Backend';
+  const emotionStatus = modules?.emotion?.status === 'enabled' ? 'Enabled' : 'Waiting';
+  const knownFaceCount = modules?.knownFaces?.count ?? 0;
 
   return (
     <main className="app">
@@ -71,8 +79,8 @@ function App() {
           <p className="eyebrow">Flask backend connected at {BACKEND_URL}</p>
           <h2>Real-time smart surveillance interface</h2>
           <p>
-            Live camera feeds, threat logs, incident zones, and secure report downloads are pulled
-            directly from your Python backend.
+            Live camera feeds, emotion signals, threat logs, incident zones, and secure report
+            downloads are pulled directly from your Python backend.
           </p>
         </div>
         <div className="hero-actions">
@@ -96,6 +104,7 @@ function App() {
         <MetricCard label="Recent Logs" value={String(logs.length)} />
         <MetricCard label="Highest Threat" value={`${highestThreat}%`} danger={highestThreat >= 80} />
         <MetricCard label="Active Zones" value={String(activeZones)} />
+        <MetricCard label="Emotion AI" value={emotionStatus} />
       </section>
 
       <section className="dashboard-grid">
@@ -117,8 +126,8 @@ function App() {
         <PanelHeader title="Project Abstract" subtitle="Submission-ready summary" />
         <div className="abstract-grid">
           <InfoBlock title="Objective" text="Detect suspicious activity through AI-enabled camera monitoring and show alerts on a web dashboard." />
-          <InfoBlock title="Features" text="Live feeds, YOLO threat logs, zone status, report download, and backend health monitoring." />
-          <InfoBlock title="Technologies" text="React, Vite, Flask, OpenCV, YOLOv8, SQLite, Python, and CSS." />
+          <InfoBlock title="Features" text={`Live feeds, YOLO threat logs, emotion signals, zone status, ${knownFaceCount} known face profiles, and reports.`} />
+          <InfoBlock title="Technologies" text="React, Vite, Flask, OpenCV, YOLOv8, SQLite, facial landmarks, Python, and CSS." />
           <InfoBlock title="Outcome" text="A working full-stack surveillance prototype with a frontend connected to the backend APIs." />
         </div>
       </section>

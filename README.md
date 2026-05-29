@@ -12,6 +12,8 @@ The objective of this project is to build an AI-powered surveillance system that
 - Live camera feed monitoring through Flask video streams
 - Threat log dashboard connected to backend API
 - Zone-based threat tracking
+- Known-person image database for face recognition
+- Emotion signal detection using facial landmark analysis
 - Telegram alert support for high-risk detections
 - Secure incident report download
 - Smart surveillance command dashboard built in React
@@ -28,6 +30,8 @@ The objective of this project is to build an AI-powered surveillance system that
 - Flask
 - OpenCV
 - YOLOv8 / Ultralytics
+- Face Recognition
+- Facial Landmark Analysis
 - SQLite
 - Telegram Bot API
 
@@ -91,10 +95,40 @@ http://127.0.0.1:5173/
 
 ```text
 GET /api/logs
+GET /api/modules
 GET /video_feed_1
 GET /video_feed_2
 GET /download_secure_report
 ```
+
+## Known Face Database
+
+Add authorized person photos inside:
+
+```text
+Backend/database/known_faces/
+```
+
+You can use either direct image files:
+
+```text
+Backend/database/known_faces/Aryan_Negi.jpg
+Backend/database/known_faces/Student_01.jpg
+```
+
+Or person-wise folders for multiple images:
+
+```text
+Backend/database/known_faces/
+├── Aryan_Negi/
+│   ├── front.jpg
+│   └── side.jpg
+└── Student_01/
+    ├── photo1.jpg
+    └── photo2.jpg
+```
+
+The backend automatically rebuilds face encodings when known-face images are added or changed.
 
 ## Important Notes
 
@@ -109,7 +143,8 @@ The final outcome is a working full-stack AI surveillance prototype where the ba
 
 ## Future Improvements
 
-- Face recognition with known-person database
+- Deep-learning emotion model for higher accuracy
+- Satellite map overlay for border, disaster, and remote asset monitoring
 - Cloud deployment
 - Mobile notifications
 - User login and admin authentication

@@ -1,76 +1,106 @@
+"""Rule-based threat scoring. Pure: no I/O, no state beyond configuration."""
+
+from __future__ import annotations
+
+MIN_SCORE = 0
+MAX_SCORE = 100
+
+_ZONE_RULES = {
+    "CRITICAL": (40, "Breached Critical Zone"),
+    "WARNING": (30, "In Warning Zone"),
+    "PERIMETER": (20, "In Perimeter"),
+    "SAFE": (0, "In Safe Zone"),
+}
+_OBJECT_RULES = {
+    "Person": (30, None),
+    "Car": (40, "Vehicle Detected"),
+    "Motorcycle": (40, "Vehicle Detected"),
+    "Dog": (10, "Animal Detected"),
+}
+_FACE_RULES = {
+    "KNOWN": (-50, "Authorized Personnel"),
+    "SPOOF": (50, "Spoofing Attempt Detected"),
+    # Liveness is still being established: neither trusted nor penalised yet.
+    "VERIFYING": (0, "Verifying liveness"),
+    "N/A": (0, None),
+}
+_UNKNOWN_FACE_RULE = (20, "Unknown Identity")
+
+WEAPON_REASON = "CRITICAL: Lethal Weapon Detected!"
+CRAWLING_SCORE = 50
+ANOMALY_SCORE = 40
+LOITERING_SCORE = 20
+
+
+def categorize(score: int) -> str:
+    """<30 LOW (log only), <70 WARNING, else CRITICAL (alert + record)."""
+    if score < 30:
+        return "LOW"
+    if score < 70:
+        return "WARNING"
+    return "CRITICAL"
+
+
 class ThreatAssessor:
-    def __init__(self):
-        # Base threat score limits
-        self.MIN_SCORE = 0
-        self.MAX_SCORE = 100
+    """Combines zone, object class, identity and behaviour into a 0-100 score."""
 
-    # 🔴 PHASE 5 UPDATE: Added is_crawling and has_weapon parameters
-    def calculate_threat(self, zone_level, object_type, face_status="UNKNOWN", is_anomaly=False, is_crawling=False, has_weapon=False):
-        """
-        Calculates a dynamic threat score based on multiple sensor inputs.
-        Returns: (final_score, threat_category, reasons_list)
-        """
-        score = 0
-        reasons = []
+    def __init__(self, loiter_threshold: float | None = None):
+        """``loiter_threshold`` None resolves to ``settings.LOITER_SECONDS``.
 
-        # 🚀 THE ULTIMATE THREAT: Weapon Rule overrides everything
+        Resolved here rather than per call so ``calculate_threat`` stays pure.
+        """
+        if loiter_threshold is None:
+            from config import settings
+
+            loiter_threshold = settings.LOITER_SECONDS
+        self.loiter_threshold = float(loiter_threshold)
+
+    def calculate_threat(
+        self,
+        zone_level,
+        object_type,
+        face_status="UNKNOWN",
+        is_anomaly=False,
+        is_crawling=False,
+        has_weapon=False,
+        loiter_seconds=0.0,
+        anomaly_type=None,
+        loiter_threshold=None,
+    ) -> tuple[int, str, list[str]]:
+        """Return ``(score, category, reasons)``.
+
+        ``face_status`` only matters for persons. ``loiter_threshold`` None
+        uses the assessor's configured threshold; a threshold <= 0 disables
+        the loitering rule.
+        """
         if has_weapon:
-            return 100, "CRITICAL", ["CRITICAL: Lethal Weapon Detected!"]
+            # A weapon overrides every mitigating factor, identity included.
+            return MAX_SCORE, "CRITICAL", [WEAPON_REASON]
 
-        # 1. Zone Analysis (Where is the intruder?)
-        if zone_level == "CRITICAL":
-            score += 40
-            reasons.append("Breached Critical Zone")
-        elif zone_level == "WARNING":  # Used in your web dashboard
-            score += 30
-            reasons.append("In Warning Zone")
-        elif zone_level == "PERIMETER":
-            score += 20
-            reasons.append("In Perimeter")
-        elif zone_level == "SAFE":
-            reasons.append("In Safe Zone")
+        score = 0
+        reasons: list[str] = []
 
-        # 2. Object Type Analysis (What is the intruder?)
+        def apply(rule: tuple[int, str | None]) -> None:
+            nonlocal score
+            points, reason = rule
+            score += points
+            if reason:
+                reasons.append(reason)
+
+        apply(_ZONE_RULES.get(zone_level, (0, None)))
+        apply(_OBJECT_RULES.get(object_type, (0, None)))
         if object_type == "Person":
-            score += 30
-        elif object_type in ["Car", "Motorcycle"]:
-            score += 40
-            reasons.append("Vehicle Detected")
-        elif object_type == "Dog":
-            score += 10
-            reasons.append("Animal Detected")
-
-        # 3. Face / Identity Analysis (Only applicable for Persons)
-        if object_type == "Person":
-            if face_status == "KNOWN":
-                score -= 50  # Friendly, massive reduction in threat
-                reasons.append("Authorized Personnel")
-            elif face_status == "SPOOF":
-                score += 50  # Extremely suspicious
-                reasons.append("Spoofing Attempt Detected")
-            else: 
-                # UNKNOWN
-                score += 20
-                reasons.append("Unknown Identity")
-
-        # 4. Behavioral / Anomaly Analysis (What are they doing?)
+            apply(_FACE_RULES.get(face_status, _UNKNOWN_FACE_RULE))
         if is_crawling:
-            score += 50  # Crawling gives a massive threat bump
-            reasons.append("Suspicious Posture: Crawling/Prone")
-
+            apply((CRAWLING_SCORE, "Suspicious Posture: Crawling/Prone"))
         if is_anomaly:
-            score += 40
-            reasons.append("Anomalous/Suspicious Behavior")
+            label = f"Anomalous Behavior: {anomaly_type}" if anomaly_type else "Anomalous/Suspicious Behavior"
+            apply((ANOMALY_SCORE, label))
 
-        # Clamp score mathematically between 0 and 100
-        final_score = max(self.MIN_SCORE, min(self.MAX_SCORE, score))
+        threshold = self.loiter_threshold if loiter_threshold is None else loiter_threshold
+        # A verified resident standing in their own yard is not loitering.
+        if threshold > 0 and loiter_seconds >= threshold and zone_level != "SAFE" and face_status != "KNOWN":
+            apply((LOITERING_SCORE, f"Loitering {int(loiter_seconds)}s"))
 
-        # Determine Threat Category
-        if final_score < 30:
-            category = "LOW"       # Ignore or just log
-        elif final_score < 70:
-            category = "WARNING"   # Silent Telegram Alert
-        else:
-            category = "CRITICAL"  # Record Video, Sound Alarm, Telegram Alert
-
-        return final_score, category, reasons
+        final_score = max(MIN_SCORE, min(MAX_SCORE, score))
+        return final_score, categorize(final_score), reasons

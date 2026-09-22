@@ -1,328 +1,522 @@
+"""Project Chanakya HTTP API.
+
+``create_app(engine)`` builds the Flask app around a duck-typed engine so the
+routes can be tested with fakes; ``main()`` wires the real engine. Security
+decisions worth knowing:
+
+* Auth is optional (``CHANAKYA_API_TOKEN``). When it is unset the server only
+  accepts loopback ``Host`` headers (DNS-rebinding guard) and ``main()``
+  refuses to bind to a non-loopback address.
+* CORS preflights (OPTIONS) are exempt from auth: they never carry
+  credentials, and a 401 preflight makes every browser fetch fail.
+* Mutating requests with a foreign ``Origin`` are rejected in BOTH modes: a
+  cross-site multipart POST is not preflighted, so without this any web page
+  could enroll an "authorized" face or pause alerts.
+* ``?token=`` exists because ``<img>``/``<video>``/``EventSource`` cannot set
+  headers; the access log is filtered so the token never reaches disk.
+* Exception text never reaches a client (the 500 body is fixed).
+"""
+
+from __future__ import annotations
+
+import hmac
+import io
+import json
+import logging
+import re
 import sys
-import time
-import os
 import threading
+import time
 from pathlib import Path
-from flask import Flask, render_template, Response, jsonify, send_file
-from flask_cors import CORS  # 👈 NEW: Added CORS for React connection
-import cv2
-import numpy as np
-import atexit
 
-# --- PATH & IMPORT SETUP ---
-BASE_DIR = Path(__file__).resolve().parent.parent
-sys.path.append(str(BASE_DIR))
+_BACKEND = Path(__file__).resolve().parent.parent
+if str(_BACKEND) not in sys.path:
+    sys.path.insert(0, str(_BACKEND))
 
-from ultralytics import YOLO
-from src.threat_assessor import ThreatAssessor
-from src.face_recognizer import FaceRecognizer
-from src.liveness_detector import LivenessDetector
-from src.emotion_detector import EmotionDetector
-from src.database_manager import DatabaseManager
-from src.telegram_bot import send_telegram_alert
-from src.report_generator import generate_pdf_report
-from config.settings import MODEL_PATH, CONFIDENCE_LIMIT
+from flask import Flask, Response, abort, jsonify, request, send_file, send_from_directory  # noqa: E402
+from flask_cors import CORS  # noqa: E402
+from werkzeug.exceptions import HTTPException  # noqa: E402
 
-# 🔐 Optional Encryption Fallback
-try:
-    from src.security_vault import encrypt_file
-    ENCRYPTION_ENABLED = True
-except ImportError:
-    print("⚠️ WARNING: Cryptography module missing. Reports will NOT be encrypted.")
-    ENCRYPTION_ENABLED = False
+from config import settings as default_settings  # noqa: E402
+from src.report_generator import generate_pdf_report  # noqa: E402
+from src.security_vault import encrypt_bytes  # noqa: E402
 
-app = Flask(__name__)
-CORS(app)  # 👈 NEW: This allows your React Command Center to talk to Flask
+log = logging.getLogger("chanakya.api")
 
-SNAPSHOTS_DIR = BASE_DIR / "database/snapshots"
-os.makedirs(SNAPSHOTS_DIR, exist_ok=True)
+AUTH_EXEMPT_ENDPOINTS = frozenset({"health", "index", "frontend_asset"})
+LOOPBACK_HOSTS = frozenset({"127.0.0.1", "localhost", "::1", "[::1]"})
+MAX_SSE_SUBSCRIBERS = 32
+MAX_MJPEG_VIEWERS = 8
+SSE_PING_SECONDS = 15.0
+ALLOWED_FACE_EXTENSIONS = frozenset({"jpg", "jpeg", "png"})
+MAX_FACE_UPLOAD = 5 * 1024 * 1024
+_TOKEN_RE = re.compile(r"(token=)[^&\s\"']+")
 
-# --- ADVANCED THREADED CAMERA CLASS ---
-class ThreadedCamera:
-    def __init__(self, src=0):
-        self.capture = cv2.VideoCapture(src, cv2.CAP_AVFOUNDATION)
-        self.capture.set(cv2.CAP_PROP_BUFFERSIZE, 2)
-        self.ret, self.frame = self.capture.read()
-        self.stopped = False
-        self.lock = threading.Lock()
-        if self.ret:
-            self.thread = threading.Thread(target=self.update, args=())
-            self.thread.daemon = True
-            self.thread.start()
 
-    def update(self):
-        while not self.stopped:
-            ret, frame = self.capture.read()
-            with self.lock:
-                self.ret = ret
-                self.frame = frame
-            time.sleep(0.01)
+class _TokenRedactor(logging.Filter):
+    """Werkzeug logs the full query string; strip ``?token=`` before it hits a file."""
 
-    def read(self):
-        with self.lock:
-            return self.ret, self.frame.copy() if self.ret else None
+    def filter(self, record: logging.LogRecord) -> bool:
+        if isinstance(record.msg, str):
+            record.msg = _TOKEN_RE.sub(r"\1***", record.msg)
+        if record.args:
+            if isinstance(record.args, tuple):
+                record.args = tuple(_TOKEN_RE.sub(r"\1***", a) if isinstance(a, str) else a for a in record.args)
+            elif isinstance(record.args, dict):
+                record.args = {
+                    k: (_TOKEN_RE.sub(r"\1***", v) if isinstance(v, str) else v) for k, v in record.args.items()
+                }
+        return True
 
-    def stop(self):
-        self.stopped = True
-        if hasattr(self, 'thread'):
-            self.thread.join()
-        self.capture.release()
 
-# Start Cameras
-print("🎥 Initializing Camera Threads...")
-cam_alpha = ThreadedCamera(0)  # Master Cam
-cam_bravo = ThreadedCamera(1)  # Secondary Cam
+def _json_error(status: int, message: str):
+    return jsonify({"error": message}), status
 
-def cleanup():
-    cam_alpha.stop()
-    cam_bravo.stop()
-atexit.register(cleanup)
 
-# --- LOAD AI MODELS & TRAFFIC CONTROLLER ---
-print("🧠 Loading DUAL-CORE AI & Memory...")
-db = DatabaseManager()
+def _hostname(host: str | None) -> str:
+    """``Host`` header without the port: ``127.0.0.1:5001`` -> ``127.0.0.1``, ``[::1]:5001`` -> ``[::1]``."""
+    host = (host or "").strip().lower()
+    if host.startswith("["):
+        return host.split("]", 1)[0] + "]"
+    return host.rsplit(":", 1)[0] if ":" in host else host
 
-# 🚦 THE AI LOCK (Fixes PyTorch Collision)
-ai_lock = threading.Lock()
 
-model = YOLO(MODEL_PATH)                  
-pose_model = YOLO('yolov8n-pose.pt')      
-face_id = FaceRecognizer(str(BASE_DIR / "database/known_faces"), str(BASE_DIR / "database/face_encodings.pkl"))
-liveness_detector = LivenessDetector()
-emotion_detector = EmotionDetector()
-threat_engine = ThreatAssessor()
+def _parse_bool(value: str | None):
+    if value is None:
+        return None
+    v = value.strip().lower()
+    if v in ("1", "true", "yes"):
+        return True
+    if v in ("0", "false", "no"):
+        return False
+    raise ValueError("expected true or false")
 
-THREAT_CLASSES = {
-    0: "Person",
-    2: "Car",
-    3: "Motorcycle",
-    16: "Dog",
-    43: "Weapon (Knife)"
-}
 
-# --- MASTER AI PROCESSING LOOP ---
-def generate_ai_frames(camera, cam_name="ALPHA"):
-    frame_count = 0
-    latest_boxes = []
-    last_log_time = 0
-    last_center = None
-
-    tracked_objects = {}
-
-    while True:
-        ret, raw_frame = camera.read()
-        if not ret or raw_frame is None:
-            time.sleep(0.5)
-            continue
-            
-        clean_frame = cv2.resize(raw_frame, (640, 480))
-        frame_count += 1
-        
-        # 1. SKELETON LAYER (Protected by AI Lock)
-        with ai_lock:
-            pose_results = pose_model(clean_frame, verbose=False)
-        display_frame = pose_results[0].plot(boxes=False) if len(pose_results) > 0 else clean_frame.copy()
-        
-        # ZONES LAYER
-        cv2.rectangle(display_frame, (0, 0), (320, 480), (0, 255, 0), 2)
-        cv2.putText(display_frame, f"FEED: {cam_name} [SAFE]", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-        cv2.rectangle(display_frame, (320, 0), (640, 480), (0, 165, 255), 2)
-        cv2.putText(display_frame, "[WARNING]", (330, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
-        
-        is_live, blinks = liveness_detector.check_liveness(clean_frame)
-        cv2.putText(display_frame, f"EAR Blinks: {blinks}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 255, 0), 2)
-        
-        # 2. DETECTION LAYER WITH TRACKING (Protected by AI Lock, Every frame)
-        with ai_lock:
-            detections = model.track(clean_frame, persist=True, tracker="bytetrack.yaml", verbose=False)
-        
-        latest_boxes = []
-        current_center = None
-        largest_area = 0
-        
-        do_heavy_calc = (frame_count % 5 == 0)
-        
-        for detection in detections:
-            if detection.boxes is None or detection.boxes.id is None:
-                continue
-                
-            for box in detection.boxes:
-                class_id = int(box.cls[0])
-                conf = float(box.conf[0])
-                
-                if class_id in THREAT_CLASSES and conf > CONFIDENCE_LIMIT:
-                    x1, y1, x2, y2 = map(int, box.xyxy[0])
-                    obj_type = THREAT_CLASSES[class_id]
-                    cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
-                    zone_level = "SAFE" if cx < 320 else "WARNING"
-                    
-                    track_id = int(box.id[0]) if box.id is not None else -1
-                    if track_id == -1:
-                        continue
-                        
-                    is_crawling = False
-                    has_weapon = True if class_id == 43 else False
-                    
-                    if obj_type == "Person":
-                        width, height = (x2 - x1), (y2 - y1)
-                        if width > height * 1.2:
-                            is_crawling = True
-                            
-                    if do_heavy_calc or track_id not in tracked_objects:
-                        face_status, is_auth, display_name = "UNKNOWN", False, obj_type
-                        emotion_label, emotion_confidence = "N/A", 0
-                        
-                        if class_id == 0:
-                            identity = face_id.identify(clean_frame, (x1, y1, x2, y2))
-                            emotion_result = emotion_detector.detect(clean_frame, (x1, y1, x2, y2))
-                            emotion_label = emotion_result["emotion"]
-                            emotion_confidence = emotion_result["confidence"]
-
-                            if identity not in ["Unknown", None]:
-                                display_name = identity
-                                face_status = "KNOWN" if is_live else "SPOOF"
-                                is_auth = is_live
-                                
-                        score, cat, reasons = threat_engine.calculate_threat(
-                            zone_level=zone_level, object_type=obj_type, 
-                            face_status=face_status, is_crawling=is_crawling, has_weapon=has_weapon
-                        )
-                        
-                        box_color = (0, 255, 0) if (is_auth and not is_crawling and not has_weapon) else ((0, 0, 255) if score >= 80 else (0, 165, 255))
-                        
-                        prefix = "✅ " if is_auth else "⚠️ "
-                        if is_crawling: prefix = "🕷️ CRAWL "
-                        if has_weapon: prefix = "🔪 LETHAL "
-                        
-                        emotion_text = f" | {emotion_label} {emotion_confidence}%" if class_id == 0 else ""
-                        label = f"{prefix}ID:{track_id} {display_name}{emotion_text} | {score}%"
-                        
-                        tracked_objects[track_id] = {
-                            "color": box_color,
-                            "label": label,
-                            "score": score,
-                            "is_auth": is_auth,
-                            "display_name": display_name,
-                            "emotion": emotion_label,
-                            "emotion_confidence": emotion_confidence
-                        }
-                    else:
-                        cached = tracked_objects[track_id]
-                        box_color = cached["color"]
-                        label = cached["label"]
-                        score = cached["score"]
-                        is_auth = cached["is_auth"]
-                        display_name = cached["display_name"]
-                        emotion_label = cached.get("emotion", "N/A")
-                        emotion_confidence = cached.get("emotion_confidence", 0)
-                        
-                        if not is_auth and not is_crawling and not has_weapon:
-                            box_color = (0, 0, 255) if score >= 80 else (0, 165, 255)
-                            
-                    latest_boxes.append((x1, y1, x2, y2, box_color, label, cx, cy))
-
-                    area = (x2 - x1) * (y2 - y1)
-                    if area > largest_area:
-                        largest_area = area
-                        current_center = (cx, cy)
-
-                    # Telemetry & DB
-                    current_time = time.time()
-                    if (current_time - last_log_time > 5) and (score >= 70) and not is_auth: 
-                        snap_path = str(SNAPSHOTS_DIR / f"alert_{cam_name}_{int(current_time)}.jpg")
-                        cv2.imwrite(snap_path, display_frame)
-                        emotion_context = f", Emotion:{emotion_label} {emotion_confidence}%" if class_id == 0 else ""
-                        db.log_incident(
-                            object_type=f"[{cam_name}] {display_name} (ID:{track_id}{emotion_context})",
-                            threat_score=score,
-                            zone_level=zone_level,
-                            image_path=snap_path
-                        )
-                        send_telegram_alert(f"{display_name} ID:{track_id}{emotion_context} ({cam_name})", score, snap_path)
-                        last_log_time = current_time
-                        
-            if current_center is not None: last_center = current_center
-
-        # Render Tracking Box
-        for (x1, y1, x2, y2, color, label, cx, cy) in latest_boxes:
-            cv2.rectangle(display_frame, (x1, y1), (x2, y2), color, 2)
-            cv2.putText(display_frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-            cv2.circle(display_frame, (cx, cy), 5, (0, 255, 0), -1)
-            if last_center is not None:
-                cv2.arrowedLine(display_frame, last_center, (cx, cy), (255, 255, 0), 2, tipLength=0.3)
-
-        ret, buffer = cv2.imencode('.jpg', display_frame)
-        yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-
-# --- ROUTES ---
-@app.route('/')
-def index():
-    return render_template('index.html')
-
-def generate_standby_frames(message, instruction):
-    black_frame = np.zeros((480, 640, 3), dtype=np.uint8)
-    cv2.putText(black_frame, message, (120, 240), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-    cv2.putText(black_frame, instruction, (140, 280), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 165, 255), 2)
-    ret, buffer = cv2.imencode('.jpg', black_frame)
-    while True:
-        yield (b'--frame\r\nContent-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
-        time.sleep(1)
-
-@app.route('/video_feed_1')
-def video_feed_1():
-    if not cam_alpha.ret:
-        return Response(
-            generate_standby_frames("ALPHA FEED OFFLINE", "ALLOW CAMERA ACCESS"),
-            mimetype='multipart/x-mixed-replace; boundary=frame'
-        )
-
-    return Response(generate_ai_frames(cam_alpha, "ALPHA"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/video_feed_2')
-def video_feed_2():
-    if not cam_bravo.ret:
-        return Response(
-            generate_standby_frames("BRAVO FEED OFFLINE", "CONNECT SECOND CAMERA"),
-            mimetype='multipart/x-mixed-replace; boundary=frame'
-        )
-    
-    return Response(generate_ai_frames(cam_bravo, "BRAVO"), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-@app.route('/api/logs')
-def get_logs():
-    logs = db.get_recent_logs(limit=15)
-    return jsonify([{"timestamp": l[0], "object": l[1], "threat": l[2], "zone": l[3]} for l in logs])
-
-@app.route('/api/modules')
-def get_modules():
-    known_people = sorted(set(face_id.known_names))
-    return jsonify({
-        "emotion": {
-            "status": "enabled",
-            "engine": "facial-landmark-signal",
-            "classes": ["Neutral", "Focused", "Happy", "Surprised", "Tired", "Unknown"]
-        },
-        "knownFaces": {
-            "count": len(known_people),
-            "names": known_people
-        },
-        "streams": {
-            "alpha": "online" if cam_alpha.ret else "offline",
-            "bravo": "online" if cam_bravo.ret else "offline"
-        }
-    })
-
-@app.route('/download_secure_report')
-def download_secure():
+def _parse_int(value: str | None, name: str, lo: int | None = None, hi: int | None = None, default=None):
+    if value is None or value == "":
+        return default
     try:
-        report_path = generate_pdf_report()
-        if report_path:
-            if ENCRYPTION_ENABLED: encrypt_file(report_path)
-            return send_file(report_path, as_attachment=True)
-        return "Error: Empty Database.", 404
-    except Exception as e:
-        return f"Report Failed: {e}", 500
+        n = int(value)
+    except ValueError as exc:
+        raise ValueError(f"{name} must be an integer") from exc
+    if lo is not None and n < lo:
+        raise ValueError(f"{name} must be >= {lo}")
+    if hi is not None and n > hi:
+        raise ValueError(f"{name} must be <= {hi}")
+    return n
 
-if __name__ == '__main__':
-    print("🌐 Project Chanakya Web Core ONLINE on Port 5001")
-    app.run(host='127.0.0.1', port=5001, debug=True, use_reloader=False)
+
+def create_app(engine, settings=None) -> Flask:
+    if engine is None:
+        raise ValueError("create_app requires an engine")
+    s = settings or default_settings
+    app = Flask(__name__, static_folder=None)
+    app.config["MAX_CONTENT_LENGTH"] = 6 * 1024 * 1024
+    app.config["JSON_SORT_KEYS"] = False
+    CORS(app, origins=list(s.CORS_ORIGINS))
+    logging.getLogger("werkzeug").addFilter(_TokenRedactor())
+
+    token = s.API_TOKEN or None
+    token_bytes = token.encode("utf-8") if token else None
+    started = time.time()
+    frontend_dist = Path(s.FRONTEND_DIST)
+    sse_count = [0]
+    viewers: dict[str, int] = {}
+    counters_lock = threading.Lock()
+
+    # ------------------------------------------------------------------ guards
+    def _supplied_token() -> str | None:
+        header = request.headers.get("Authorization", "")
+        if header.startswith("Bearer "):
+            return header[7:].strip()
+        return request.args.get("token")
+
+    def _origin_allowed(origin: str) -> bool:
+        if origin in s.CORS_ORIGINS or "*" in s.CORS_ORIGINS:
+            return True
+        return origin == request.host_url.rstrip("/")
+
+    @app.before_request
+    def _guard():
+        if request.method == "OPTIONS":
+            return None  # preflights carry no credentials; flask-cors answers them
+        if request.method in ("POST", "PUT", "DELETE", "PATCH"):
+            origin = request.headers.get("Origin")
+            if origin and not _origin_allowed(origin):
+                return _json_error(403, "forbidden origin")
+        if token_bytes is None:
+            if _hostname(request.host) not in LOOPBACK_HOSTS:
+                return _json_error(403, "forbidden host")
+            return None
+        if request.endpoint in AUTH_EXEMPT_ENDPOINTS:
+            return None
+        supplied = _supplied_token()
+        if supplied is None or not hmac.compare_digest(supplied.encode("utf-8"), token_bytes):
+            return _json_error(401, "unauthorized")
+        return None
+
+    # ------------------------------------------------------------------ errors
+    @app.errorhandler(HTTPException)
+    def _http_error(exc: HTTPException):
+        message = {
+            400: "bad request",
+            401: "unauthorized",
+            403: "forbidden",
+            404: "not found",
+            405: "method not allowed",
+            413: "payload too large",
+            415: "unsupported media type",
+            503: "service unavailable",
+        }.get(exc.code, exc.name.lower())
+        if exc.code in (400, 404, 413, 503) and exc.description and exc.description != exc.__class__.description:
+            message = exc.description
+        return _json_error(exc.code or 500, message)
+
+    @app.errorhandler(Exception)
+    def _unhandled(exc: Exception):
+        log.exception("unhandled error on %s", request.endpoint)
+        return _json_error(500, "internal error")
+
+    # ------------------------------------------------------------------ helpers
+    def _worker_or_404(camera_id: str):
+        worker = engine.get_worker(camera_id)
+        if worker is None:
+            abort(404, description="unknown camera")
+        return worker
+
+    def _incident_or_404(incident_id: int) -> dict:
+        incident = engine.db.get_incident(incident_id)
+        if incident is None:
+            abort(404, description="unknown incident")
+        return incident
+
+    def _serve_incident_file(incident_id: int, key: str, root, mimetype: str, ext: str):
+        incident = _incident_or_404(incident_id)
+        path = s.safe_child(incident.get(key), root)
+        if path is None:
+            abort(404, description="file not available")
+        as_attachment = request.args.get("download") == "1"
+        return send_file(
+            path,
+            mimetype=mimetype,
+            conditional=True,
+            as_attachment=as_attachment,
+            download_name=f"incident_{incident_id}.{ext}",
+        )
+
+    def _json_object():
+        body = request.get_json(silent=True)
+        return body if isinstance(body, dict) else None
+
+    # ------------------------------------------------------------------ meta
+    @app.get("/api/health", endpoint="health")
+    def health():
+        return jsonify(
+            {
+                "status": "ok",
+                "version": s.VERSION,
+                "auth_required": token_bytes is not None,
+                "uptime_s": int(time.time() - started),
+            }
+        )
+
+    @app.get("/api/modules")
+    def modules():
+        return jsonify(engine.modules())
+
+    # ------------------------------------------------------------------ cameras & streams
+    @app.get("/api/cameras")
+    def cameras():
+        out = []
+        for status in engine.cameras():
+            cid = status["id"]
+            out.append(
+                {**status, "stream_url": f"/video_feed/{cid}", "snapshot_url": f"/api/cameras/{cid}/snapshot.jpg"}
+            )
+        return jsonify(out)
+
+    def _mjpeg(worker, camera_id: str):
+        with counters_lock:
+            if viewers.get(camera_id, 0) >= MAX_MJPEG_VIEWERS:
+                abort(503, description="too many streams")
+            viewers[camera_id] = viewers.get(camera_id, 0) + 1
+
+        def generate():
+            seq = -1
+            try:
+                while True:
+                    seq, jpeg = worker.wait_for_frame(seq, timeout=1.0)
+                    yield (
+                        b"--frame\r\nContent-Type: image/jpeg\r\nContent-Length: "
+                        + str(len(jpeg)).encode()
+                        + b"\r\n\r\n"
+                        + jpeg
+                        + b"\r\n"
+                    )
+            finally:
+                with counters_lock:
+                    viewers[camera_id] = max(0, viewers.get(camera_id, 1) - 1)
+
+        return Response(
+            generate(), mimetype="multipart/x-mixed-replace; boundary=frame", headers={"Cache-Control": "no-store"}
+        )
+
+    @app.get("/video_feed/<camera_id>")
+    def video_feed(camera_id: str):
+        return _mjpeg(_worker_or_404(camera_id), camera_id)
+
+    def _legacy_feed(index: int):
+        ids = engine.camera_ids()
+        if index >= len(ids):
+            abort(404, description="no such camera")
+        return _mjpeg(_worker_or_404(ids[index]), ids[index])
+
+    @app.get("/video_feed_1")
+    def video_feed_1():
+        return _legacy_feed(0)
+
+    @app.get("/video_feed_2")
+    def video_feed_2():
+        return _legacy_feed(1)
+
+    @app.get("/api/cameras/<camera_id>/snapshot.jpg")
+    def camera_snapshot(camera_id: str):
+        worker = _worker_or_404(camera_id)
+        jpeg = worker.latest_jpeg(annotated=request.args.get("raw") != "1")
+        return Response(jpeg, mimetype="image/jpeg", headers={"Cache-Control": "no-store"})
+
+    # ------------------------------------------------------------------ incidents
+    @app.get("/api/incidents")
+    def incidents():
+        try:
+            limit = _parse_int(request.args.get("limit"), "limit", 1, 200, default=50)
+            offset = _parse_int(request.args.get("offset"), "offset", 0, None, default=0)
+            min_threat = _parse_int(request.args.get("min_threat"), "min_threat", 0, 100)
+            acknowledged = _parse_bool(request.args.get("acknowledged"))
+        except ValueError as exc:
+            return _json_error(400, str(exc))
+        zone = request.args.get("zone") or None
+        camera = request.args.get("camera") or None
+        since = request.args.get("since") or None
+        try:
+            items, total = engine.db.list_incidents(
+                limit=limit,
+                offset=offset,
+                min_threat=min_threat,
+                zone=zone,
+                camera=camera,
+                since=since,
+                acknowledged=acknowledged,
+            )
+        except ValueError as exc:
+            return _json_error(400, str(exc))
+        return jsonify(
+            {"items": [engine.serialize_incident(i) for i in items], "total": total, "limit": limit, "offset": offset}
+        )
+
+    @app.get("/api/incidents/<int:incident_id>")
+    def incident(incident_id: int):
+        return jsonify(engine.serialize_incident(_incident_or_404(incident_id)))
+
+    @app.get("/api/incidents/<int:incident_id>/snapshot")
+    def incident_snapshot(incident_id: int):
+        return _serve_incident_file(incident_id, "image_path", s.SNAPSHOTS_DIR, "image/jpeg", "jpg")
+
+    @app.get("/api/incidents/<int:incident_id>/clip")
+    def incident_clip(incident_id: int):
+        return _serve_incident_file(incident_id, "clip_path", s.VIDEOS_DIR, "video/mp4", "mp4")
+
+    @app.post("/api/incidents/<int:incident_id>/ack")
+    def incident_ack(incident_id: int):
+        body = _json_object() or {}
+        acknowledged = body.get("acknowledged", True)
+        if not isinstance(acknowledged, bool):
+            return _json_error(400, "acknowledged must be a boolean")
+        if not engine.db.acknowledge(incident_id, acknowledged):
+            abort(404, description="unknown incident")
+        engine.event_bus.publish("ack", {"id": incident_id, "acknowledged": acknowledged})
+        return jsonify(engine.serialize_incident(engine.db.get_incident(incident_id)))
+
+    @app.get("/api/logs")
+    def legacy_logs():
+        rows = engine.db.get_recent_logs(limit=15)
+        return jsonify([{"timestamp": r[0], "object": r[1], "threat": r[2], "zone": r[3]} for r in rows])
+
+    @app.get("/api/stats")
+    def stats():
+        try:
+            hours = _parse_int(request.args.get("hours"), "hours", 1, 168, default=24)
+        except ValueError as exc:
+            return _json_error(400, str(exc))
+        return jsonify(engine.db.stats(hours=hours))
+
+    # ------------------------------------------------------------------ zones
+    @app.get("/api/zones")
+    def zones():
+        from src.zones import LEVELS
+
+        return jsonify({"levels": list(LEVELS), "zones": engine.zone_manager.to_dict()})
+
+    @app.put("/api/zones/<camera_id>")
+    def put_zones(camera_id: str):
+        if camera_id != "default" and camera_id not in engine.camera_ids():
+            abort(404, description="unknown camera")
+        body = _json_object()
+        if body is None or not isinstance(body.get("zones"), list):
+            return _json_error(400, "expected a JSON object with a zones list")
+        try:
+            saved = engine.zone_manager.set_zones(camera_id, body["zones"])
+        except ValueError as exc:
+            return _json_error(400, str(exc))
+        engine.event_bus.publish("zones", {"camera_id": camera_id})
+        return jsonify({"camera_id": camera_id, "zones": [z.to_dict() for z in saved]})
+
+    # ------------------------------------------------------------------ alerts
+    @app.get("/api/alerts")
+    def alerts():
+        return jsonify({"paused": bool(engine.alert_manager.is_paused())})
+
+    def _set_paused(paused: bool):
+        (engine.alert_manager.pause if paused else engine.alert_manager.resume)()
+        engine.event_bus.publish("status", engine.status_snapshot())
+        return jsonify({"paused": bool(engine.alert_manager.is_paused())})
+
+    @app.post("/api/alerts/pause")
+    def alerts_pause():
+        return _set_paused(True)
+
+    @app.post("/api/alerts/resume")
+    def alerts_resume():
+        return _set_paused(False)
+
+    # ------------------------------------------------------------------ faces
+    @app.get("/api/faces")
+    def faces():
+        return jsonify({"people": engine.face_recognizer.list_people()})
+
+    @app.post("/api/faces")
+    def enroll_face():
+        name = (request.form.get("name") or "").strip()
+        upload = request.files.get("image")
+        if not name or upload is None or not upload.filename:
+            return _json_error(400, "name and image are required")
+        ext = upload.filename.rsplit(".", 1)[-1].lower() if "." in upload.filename else ""
+        if ext not in ALLOWED_FACE_EXTENSIONS:
+            return _json_error(400, "image must be a .jpg, .jpeg or .png file")
+        data = upload.read(MAX_FACE_UPLOAD + 1)
+        if len(data) > MAX_FACE_UPLOAD:
+            return _json_error(400, "image larger than 5 MB")
+        try:
+            result = engine.face_recognizer.enroll(name, data)
+        except ValueError as exc:
+            return _json_error(400, str(exc))
+        engine.event_bus.publish("faces", {"count": len(engine.face_recognizer.known_names)})
+        return jsonify(result), 201
+
+    @app.delete("/api/faces/<name>")
+    def remove_face(name: str):
+        if not engine.face_recognizer.remove(name):
+            abort(404, description="unknown person")
+        engine.event_bus.publish("faces", {"count": len(engine.face_recognizer.known_names)})
+        return jsonify({"removed": True})
+
+    # ------------------------------------------------------------------ events (SSE)
+    @app.get("/api/events")
+    def events():
+        with counters_lock:
+            if sse_count[0] >= MAX_SSE_SUBSCRIBERS:
+                abort(503, description="too many event streams")
+            sse_count[0] += 1
+        subscription = engine.event_bus.subscribe()
+
+        def frame(event_type: str, data) -> str:
+            return f"event: {event_type}\ndata: {json.dumps(data)}\n\n"
+
+        def generate():
+            try:
+                yield frame("status", engine.status_snapshot())
+                last_ping = time.monotonic()
+                while True:
+                    item = subscription.get(timeout=1.0)
+                    if item is not None:
+                        yield frame(item[0], item[1])
+                    if time.monotonic() - last_ping >= SSE_PING_SECONDS:
+                        last_ping = time.monotonic()
+                        yield ": ping\n\n"
+            finally:
+                subscription.close()
+                with counters_lock:
+                    sse_count[0] = max(0, sse_count[0] - 1)
+
+        return Response(
+            generate(), mimetype="text/event-stream", headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+        )
+
+    # ------------------------------------------------------------------ reports
+    def _report_response(encrypted: bool):
+        path = generate_pdf_report(engine.db, out_dir=s.REPORTS_DIR, tz_name=s.LOCAL_TZ)
+        if not encrypted:
+            return send_file(path, mimetype="application/pdf", as_attachment=True, download_name=path.name)
+        blob = encrypt_bytes(path.read_bytes(), key_file=s.KEY_FILE)
+        return send_file(
+            io.BytesIO(blob), mimetype="application/octet-stream", as_attachment=True, download_name=path.name + ".enc"
+        )
+
+    @app.get("/api/report.pdf")
+    def report():
+        return _report_response(request.args.get("encrypted") == "1")
+
+    @app.get("/download_secure_report")
+    def legacy_report():
+        return _report_response(False)
+
+    # ------------------------------------------------------------------ frontend
+    @app.get("/", endpoint="index")
+    def index():
+        if (frontend_dist / "index.html").is_file():
+            return send_from_directory(frontend_dist, "index.html")
+        return jsonify({"name": "Project Chanakya API", "version": s.VERSION})
+
+    @app.get("/assets/<path:filename>", endpoint="frontend_asset")
+    @app.get("/favicon.svg", endpoint="frontend_asset", defaults={"filename": ""})
+    def frontend_asset(filename: str):
+        if filename:
+            return send_from_directory(frontend_dist / "assets", filename)
+        return send_from_directory(frontend_dist, "favicon.svg")
+
+    return app
+
+
+def main() -> int:
+    s = default_settings
+    logging.basicConfig(
+        level=logging.DEBUG if s.DEBUG else logging.INFO, format="%(asctime)s %(name)s %(levelname)s %(message)s"
+    )
+    if s.API_TOKEN is None and s.HOST not in LOOPBACK_HOSTS:
+        log.error("refusing to bind %s without CHANAKYA_API_TOKEN: open mode is loopback-only", s.HOST)
+        return 2
+    if s.API_TOKEN is not None and len(s.API_TOKEN) < 16:
+        log.warning("CHANAKYA_API_TOKEN is shorter than 16 characters")
+
+    from src.engine.engine import SurveillanceEngine
+
+    s.ensure_dirs()
+    engine = SurveillanceEngine(s)
+    app = create_app(engine, s)
+    engine.start()
+    import atexit
+
+    atexit.register(engine.stop)
+    log.info(
+        "Project Chanakya v%s on http://%s:%s (auth %s)",
+        s.VERSION,
+        s.HOST,
+        s.PORT,
+        "required" if s.API_TOKEN else "off, loopback only",
+    )
+    app.run(host=s.HOST, port=s.PORT, debug=False, use_reloader=False, threaded=True)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

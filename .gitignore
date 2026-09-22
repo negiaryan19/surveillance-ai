@@ -1,0 +1,31 @@
+# Secrets and key material -- never commit these
+.env
+.env.local
+.env.*.local
+secret.key
+*.key
+*.enc
+
+# Runtime data: incident DB, snapshots, clips, enrolled face photos, encodings, reports.
+# These contain images of real people; they must never reach a public remote.
+database/
+Chanakya_Report_*.pdf
+*.pkl
+*.npz
+
+# Python
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Node
+node_modules/
+dist/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

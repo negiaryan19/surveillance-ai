@@ -1,58 +1,81 @@
+"""Telegram notifications, fire-and-forget from a daemon thread.
+
+Credentials are read from the environment at call time (``config.settings``
+has already loaded ``.env``), never cached at import, so tests and rotations
+do not need a process restart. The bot token is part of every Telegram URL, and
+``requests`` puts the URL into its exception text, so exceptions are logged by
+class name only — never ``str(exc)``.
+"""
+
+from __future__ import annotations
+
+import contextlib
+import logging
 import os
-import requests
 import threading
-from dotenv import load_dotenv
 
-# Load the hidden environment variables
-load_dotenv()
+log = logging.getLogger("chanakya.telegram")
 
-BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
+_API = "https://api.telegram.org"
+_warned_unconfigured = False
 
-def _send_alert_background(object_type, threat_score, image_path, message):
-    """Ye function background (invisible thread) mein chalega taaki video freeze na ho"""
+
+def _credentials() -> tuple[str | None, str | None]:
+    from config import settings  # noqa: F401 - imported for its .env side effect
+
+    return os.getenv("TELEGRAM_BOT_TOKEN") or None, os.getenv("TELEGRAM_CHAT_ID") or None
+
+
+def telegram_configured() -> bool:
+    token, chat_id = _credentials()
+    return bool(token and chat_id)
+
+
+def send_telegram_alert(
+    object_type: str, threat_score: int, image_path: str | None = None, extra: str | None = None
+) -> bool:
+    """Queue one alert message (photo with caption when a snapshot exists)."""
+    global _warned_unconfigured
+    token, chat_id = _credentials()
+    if not token or not chat_id:
+        if not _warned_unconfigured:
+            log.warning("Telegram alerts disabled: TELEGRAM_BOT_TOKEN / TELEGRAM_CHAT_ID not set")
+            _warned_unconfigured = True
+        return False
+
+    caption = f"PROJECT CHANAKYA ALERT\nThreat detected: {object_type}\nThreat score: {int(threat_score)}%"
+    if extra:
+        caption += f"\nReasons: {extra}"
+    threading.Thread(
+        target=_send, args=(token, chat_id, caption, image_path), daemon=True, name="telegram-alert"
+    ).start()
+    return True
+
+
+def _send(token: str, chat_id: str, caption: str, image_path: str | None) -> None:
+    import requests
+
     try:
-        # 1. Send the text alert (5 sec timeout)
-        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-        requests.post(url, json={"chat_id": CHAT_ID, "text": message}, timeout=5)
-        
-        # 2. Send the image (10 sec timeout)
-        if image_path and os.path.exists(image_path):
-            photo_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPhoto"
-            with open(image_path, 'rb') as photo:
-                files = {'photo': photo}
-                data = {'chat_id': CHAT_ID, 'caption': message}
-                response = requests.post(photo_url, data=data, files=files, timeout=10)
-                
-            if response.status_code == 200:
-                print("✅ 📱 Secure Telegram Alert & Photo Sent in Background!")
-            else:
-                print(f"⚠️ Telegram Error: {response.text}")
-                
-    except Exception as e:
-        print(f"❌ Background Telegram Error: {e}")
-
-def send_telegram_alert(object_type, threat_score, image_path=None):
-    """
-    Main function jo AI call karega. Ye turant thread start karke wapas video par chala jayega.
-    """
-    if not BOT_TOKEN or not CHAT_ID:
-        print("⚠️ ERROR: Telegram credentials not found! Check your .env file.")
-        return
-
-    message = f"🚨 PROJECT CHANAKYA ALERT 🚨\n\n"
-    message += f"👁️ Intruder/Threat Detected: {object_type}\n"
-    message += f"⚠️ Threat Score: {threat_score}%\n"
-    message += f"📍 Status: Action Required immediately."
-
-    # 🚀 FIRE AND FORGET: Start the upload in a parallel background thread
-    alert_thread = threading.Thread(
-        target=_send_alert_background, 
-        args=(object_type, threat_score, image_path, message),
-        daemon=True
-    )
-    alert_thread.start()
-
-if __name__ == "__main__":
-    print("Testing Secure Threaded Telegram Module...")
-    send_telegram_alert("TEST SUBJECT", 99)
+        if image_path and os.path.isfile(image_path):
+            with open(image_path, "rb") as photo:
+                response = requests.post(
+                    f"{_API}/bot{token}/sendPhoto",
+                    data={"chat_id": chat_id, "caption": caption},
+                    files={"photo": photo},
+                    timeout=15,
+                )
+        else:
+            response = requests.post(
+                f"{_API}/bot{token}/sendMessage",
+                json={"chat_id": chat_id, "text": caption},
+                timeout=10,
+            )
+        if response.status_code == 200:
+            log.info("Telegram alert sent")
+            return
+        description = ""
+        with contextlib.suppress(Exception):  # non-JSON error bodies are fine to ignore
+            description = str(response.json().get("description", ""))
+        log.warning("Telegram rejected the alert: HTTP %s %s", response.status_code, description[:200])
+    except Exception as exc:  # noqa: BLE001 - exception text contains the bot token
+        log.warning("Telegram send failed: %s", type(exc).__name__)

@@ -1,15 +1,12 @@
 import math
 
-import cv2
-import face_recognition
-
 
 class EmotionDetector:
-    """Reusable facial-landmark emotion signal detector.
+    """Heuristic emotion signal from facial landmarks (experimental).
 
-    This is intentionally lightweight: it uses existing face_recognition
-    landmarks, so the project gains an emotion module without adding another
-    heavyweight model dependency.
+    Stateless and safe to share between camera threads. ``classify`` works on
+    landmarks the face recognizer already computed, so no extra dlib call is
+    spent per person; ``detect`` is the legacy image-based entry point.
     """
 
     def detect(self, frame, bbox=None):
@@ -18,15 +15,25 @@ class EmotionDetector:
             return self._result("Unknown", 0, {})
 
         try:
-            rgb_face = cv2.cvtColor(face_image, cv2.COLOR_BGR2RGB)
-            landmarks_list = face_recognition.face_landmarks(rgb_face)
+            import face_recognition
+
+            from src.face_recognizer import DLIB_LOCK
+
+            rgb_face = face_image[:, :, ::-1].copy()
+            with DLIB_LOCK:  # dlib is not re-entrant; see face_recognizer
+                landmarks_list = face_recognition.face_landmarks(rgb_face)
         except Exception:
             return self._result("Unknown", 0, {})
 
         if not landmarks_list:
             return self._result("Unknown", 0, {})
+        return self.classify(landmarks_list[0])
 
-        signals = self._extract_signals(landmarks_list[0])
+    def classify(self, landmarks):
+        """Classify from landmarks already computed by FaceRecognizer (no image work)."""
+        if not landmarks:
+            return self._result("Unknown", 0, {})
+        signals = self._extract_signals(landmarks)
         emotion, confidence = self._classify(signals)
         return self._result(emotion, confidence, signals)
 
@@ -71,15 +78,21 @@ class EmotionDetector:
         mouth_width = signals.get("mouth_width", 0)
         brow_gap = signals.get("brow_gap", 0)
 
+        # Confidence grows with how far a signal sits past its threshold, so a
+        # borderline reading reports ~50 and a strong one up to 95.
         if eye_ratio and eye_ratio < 0.18:
-            return "Tired", 78
+            return "Tired", self._confidence((0.18 - eye_ratio) / 0.08)
         if mouth_open > 0.34 and eye_ratio > 0.24:
-            return "Surprised", 82
+            return "Surprised", self._confidence((mouth_open - 0.34) / 0.2)
         if mouth_width > 0.44 and mouth_open > 0.11:
-            return "Happy", 74
+            return "Happy", self._confidence((mouth_width - 0.44) / 0.1)
         if 0 < brow_gap < 0.15 and mouth_open < 0.16:
-            return "Focused", 70
-        return "Neutral", 66
+            return "Focused", self._confidence((0.15 - brow_gap) / 0.1)
+        return "Neutral", 50
+
+    @staticmethod
+    def _confidence(margin):
+        return int(max(50, min(95, 50 + 45 * max(0.0, min(1.0, margin)))))
 
     def _eye_aspect_ratio(self, eye):
         if len(eye) < 6:

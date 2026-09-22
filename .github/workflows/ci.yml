@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# The jobs only read the repository; no token write scopes are needed.
+permissions:
+  contents: read
+
+# A newer push to the same branch or PR supersedes the run in progress.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  backend:
+    name: Backend (pytest, Python 3.11)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: Backend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: Backend/requirements-ci.txt
+
+      # requirements-ci.txt is the light set: no ultralytics, torch, dlib or lap.
+      - name: Install the light dependency set
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-ci.txt
+
+      - name: Lint (ruff)
+        run: |
+          ruff check .
+          ruff format --check .
+
+      # Security linter; accepted findings are marked inline with `# nosec <id>` and a reason.
+      - name: Static security scan (bandit)
+        run: bandit -q -r config src web tools -x src/audio_detector.py
+
+      # Tests that need the heavy models are marked "slow". Backend/pytest.ini already
+      # deselects them; the marker expression is repeated here so CI does not depend on it.
+      # The coverage floor is the phase-7 target from ROADMAP.md minus a small margin.
+      - name: Run the test suite with coverage
+        run: python -m pytest -m "not slow" --cov=src --cov=web --cov=config --cov-report=term --cov-fail-under=80
+
+  frontend:
+    name: Frontend (lint and build, Node 22)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v6
+
+      - name: Set up Node 22
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies from the lockfile
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build

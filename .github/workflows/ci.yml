@@ -24,7 +24,7 @@ jobs:
         working-directory: Backend
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Python 3.11
         uses: actions/setup-python@v6
@@ -63,7 +63,7 @@ jobs:
         working-directory: frontend
     steps:
       - name: Check out the repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Node 22
         uses: actions/setup-node@v6

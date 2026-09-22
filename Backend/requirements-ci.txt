@@ -15,7 +15,7 @@ numpy>=1.26,<3
 opencv-python-headless>=4.9,<5
 
 # Reports
-fpdf2>=2.7,<3
+fpdf2>=2.8.8,<3
 cryptography>=42
 
 # Face enrollment uploads

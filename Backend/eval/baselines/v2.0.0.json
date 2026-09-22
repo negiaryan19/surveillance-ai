@@ -1,0 +1,17 @@
+{
+  "frames": 180,
+  "detection_tp": 286,
+  "detection_fp": 16,
+  "detection_fn": 81,
+  "detection_precision": 94.7,
+  "detection_recall": 77.9,
+  "detection_f1": 85.5,
+  "identity_switches": 3,
+  "events_expected": 3,
+  "events_hit": 3,
+  "incidents": 2,
+  "false_alerts": 0,
+  "alert_recall": 100.0,
+  "alert_precision": 100.0,
+  "fps_processed": 14.67
+}

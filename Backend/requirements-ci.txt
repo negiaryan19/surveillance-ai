@@ -1,0 +1,28 @@
+# Project Chanakya backend -- light dependency set for CI (.github/workflows/ci.yml).
+# Same pins as requirements.txt, minus ultralytics / torch / face_recognition (dlib) / lap:
+# tests that need those models are marked "slow" and skipped by pytest.ini.
+# opencv-python-headless replaces opencv-python because CI runners have no GUI libraries.
+#   pip install -r requirements-ci.txt && python -m pytest
+
+# Web
+flask>=3.0,<4
+flask-cors>=4.0,<7
+python-dotenv>=1.0,<2
+requests>=2.31,<3
+
+# Vision
+numpy>=1.26,<3
+opencv-python-headless>=4.9,<5
+
+# Reports
+fpdf2>=2.7,<3
+cryptography>=42
+
+# Face enrollment uploads
+Pillow>=10.3,<13
+
+# Tests and lint
+ruff>=0.14
+pytest-cov>=6
+bandit>=1.8
+pytest>=9,<10

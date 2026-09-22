@@ -1,54 +1,46 @@
-"""
-Movement Predictor - Phase 2.2
-------------------------------
-Predicts the future position of intruders to provide early warnings.
-"""
-import numpy as np
+"""Short-horizon movement prediction per track (one instance per camera)."""
+
+from __future__ import annotations
+
 from collections import defaultdict
+from collections.abc import Iterable
+
+import numpy as np
+
 
 class MovementPredictor:
-    def __init__(self):
-        self.history = defaultdict(list)
-        self.max_history = 10
+    def __init__(self, max_history: int = 10) -> None:
+        self.history: dict[int, list[tuple[float, float]]] = defaultdict(list)
+        self.max_history = int(max_history)
 
-    def update(self, person_id, x, y):
-        self.history[person_id].append((x, y))
-        if len(self.history[person_id]) > self.max_history:
-            self.history[person_id].pop(0)
+    def update(self, person_id: int, x: float, y: float) -> None:
+        hist = self.history[person_id]
+        hist.append((float(x), float(y)))
+        if len(hist) > self.max_history:
+            hist.pop(0)
 
-    def predict_next_position(self, person_id, frames_ahead=15):
+    def predict_next_position(self, person_id: int, frames_ahead: int = 15) -> tuple[int, int] | None:
         positions = self.history.get(person_id, [])
         if len(positions) < 3:
             return None
+        arr = np.asarray(positions)
+        avg_v = np.diff(arr, axis=0).mean(axis=0)
+        last = arr[-1]
+        return int(last[0] + avg_v[0] * frames_ahead), int(last[1] + avg_v[1] * frames_ahead)
 
-        # Calculate average velocity (dx, dy)
-        velocities_x = []
-        velocities_y = []
-        for i in range(1, len(positions)):
-            velocities_x.append(positions[i][0] - positions[i-1][0])
-            velocities_y.append(positions[i][1] - positions[i-1][1])
-
-        avg_vx = np.mean(velocities_x)
-        avg_vy = np.mean(velocities_y)
-
-        last_x, last_y = positions[-1]
-        pred_x = int(last_x + avg_vx * frames_ahead)
-        pred_y = int(last_y + avg_vy * frames_ahead)
-        return (pred_x, pred_y)
-
-    def get_direction(self, person_id):
+    def get_direction(self, person_id: int) -> str:
         positions = self.history.get(person_id, [])
         if len(positions) < 5:
-            return "Analyzing..."
-        
-        start_x, start_y = positions[0]
-        end_x, end_y = positions[-1]
-        dx, dy = end_x - start_x, end_y - start_y
-
-        if abs(dx) < 10 and abs(dy) < 10: return "Stationary"
-        
-        # FIX: Removed emojis to stop OpenCV from showing ??????
+            return "Analyzing"
+        (sx, sy), (ex, ey) = positions[0], positions[-1]
+        dx, dy = ex - sx, ey - sy
+        if abs(dx) < 10 and abs(dy) < 10:
+            return "Stationary"
         if abs(dx) > abs(dy):
-            return "East ->" if dx > 0 else "West <-"
-        else:
-            return "South v" if dy > 0 else "North ^"
+            return "East ->" if dx > 0 else "<- West"
+        return "South v" if dy > 0 else "North ^"
+
+    def prune(self, active_ids: Iterable[int]) -> None:
+        keep = set(active_ids)
+        for pid in [pid for pid in self.history if pid not in keep]:
+            del self.history[pid]

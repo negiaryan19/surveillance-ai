@@ -1,0 +1,17 @@
+# Backend lint configuration. Run: venv/bin/ruff check . && venv/bin/ruff format --check .
+target-version = "py311"
+line-length = 120
+extend-exclude = ["venv", "src/audio_detector.py"]
+
+[lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "N", "C4", "RET", "PL"]
+ignore = [
+  "E501",     # line length is handled by the formatter
+  "PLC0415",  # imports inside functions are a project rule: heavy deps load lazily
+  "PLR0913", "PLR0917", "PLR0912", "PLR0915", "PLR0911", "PLR2004",  # complexity heuristics
+  "PLW0603",  # module-level flags (one-time warnings) use `global` deliberately
+  "N818",     # exception names without the Error suffix (RuntimeError subclasses)
+]
+
+[lint.per-file-ignores]
+"tests/*" = ["PLR", "SIM", "B", "N802", "C408", "PLW1510", "PLW0108", "UP031"]

@@ -1,0 +1,4909 @@
+{
+ "fps": 15,
+ "width": 640,
+ "height": 480,
+ "frames": {
+  "0": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     49,
+     0,
+     254,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     229,
+     0,
+     357,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     41,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "1": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     46,
+     0,
+     251,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     226,
+     0,
+     354,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     38,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "2": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     43,
+     0,
+     248,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     223,
+     0,
+     351,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     35,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "3": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     39,
+     0,
+     244,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     219,
+     0,
+     347,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     31,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "4": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     36,
+     0,
+     241,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     216,
+     0,
+     344,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     28,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "5": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     33,
+     0,
+     238,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     213,
+     0,
+     341,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     25,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "6": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     29,
+     0,
+     234,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     209,
+     0,
+     337,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     21,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "7": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     26,
+     0,
+     231,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     206,
+     0,
+     334,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     18,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "8": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     22,
+     0,
+     227,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     202,
+     0,
+     330,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     14,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "9": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     19,
+     0,
+     224,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     199,
+     0,
+     327,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     11,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "10": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     16,
+     0,
+     221,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     196,
+     0,
+     324,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     8,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "11": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     12,
+     0,
+     217,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     192,
+     0,
+     320,
+     458
+    ]
+   }
+  ],
+  "12": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     9,
+     0,
+     214,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     189,
+     0,
+     317,
+     458
+    ]
+   }
+  ],
+  "13": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     5,
+     0,
+     210,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     185,
+     0,
+     313,
+     458
+    ]
+   }
+  ],
+  "14": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     2,
+     0,
+     207,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     182,
+     0,
+     310,
+     458
+    ]
+   }
+  ],
+  "15": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     204,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     179,
+     0,
+     307,
+     458
+    ]
+   }
+  ],
+  "16": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     200,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     175,
+     0,
+     303,
+     458
+    ]
+   }
+  ],
+  "17": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     197,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     172,
+     0,
+     300,
+     458
+    ]
+   }
+  ],
+  "18": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     193,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     168,
+     0,
+     296,
+     458
+    ]
+   }
+  ],
+  "19": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     190,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     165,
+     0,
+     293,
+     458
+    ]
+   }
+  ],
+  "20": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     187,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     162,
+     0,
+     290,
+     458
+    ]
+   }
+  ],
+  "21": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     183,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     158,
+     0,
+     286,
+     458
+    ]
+   }
+  ],
+  "22": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     180,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     155,
+     0,
+     283,
+     458
+    ]
+   }
+  ],
+  "23": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     177,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     152,
+     0,
+     280,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     616,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "24": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     173,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     148,
+     0,
+     276,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     612,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "25": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     170,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     145,
+     0,
+     273,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     609,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "26": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     166,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     141,
+     0,
+     269,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     605,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "27": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     163,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     138,
+     0,
+     266,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     602,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "28": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     160,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     135,
+     0,
+     263,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     599,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "29": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     156,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     131,
+     0,
+     259,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     595,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "30": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     153,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     128,
+     0,
+     256,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     592,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "31": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     149,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     124,
+     0,
+     252,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     588,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "32": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     146,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     121,
+     0,
+     249,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     585,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "33": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     143,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     118,
+     0,
+     246,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     582,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "34": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     139,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     114,
+     0,
+     242,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     578,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "35": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     136,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     111,
+     0,
+     239,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     575,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "36": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     132,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     107,
+     0,
+     235,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     571,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "37": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     129,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     104,
+     0,
+     232,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     568,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "38": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     126,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     101,
+     0,
+     229,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     565,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "39": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     122,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     97,
+     0,
+     225,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     561,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "40": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     119,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     94,
+     0,
+     222,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     558,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "41": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     116,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     91,
+     0,
+     219,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     555,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "42": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     112,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     87,
+     0,
+     215,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     551,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "43": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     109,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     84,
+     0,
+     212,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     548,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "44": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     105,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     80,
+     0,
+     208,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     544,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "45": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     102,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     77,
+     0,
+     205,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     541,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "46": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     99,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     74,
+     0,
+     202,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     538,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "47": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     95,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     70,
+     0,
+     198,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     534,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "48": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     92,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     67,
+     0,
+     195,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     531,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "49": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     88,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     63,
+     0,
+     191,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     527,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "50": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     85,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     60,
+     0,
+     188,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     524,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "51": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     82,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     57,
+     0,
+     185,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     521,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "52": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     78,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     53,
+     0,
+     181,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     517,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "53": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     75,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     50,
+     0,
+     178,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     514,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "54": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     71,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     46,
+     0,
+     174,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     510,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "55": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     68,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     43,
+     0,
+     171,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     507,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "56": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     65,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     40,
+     0,
+     168,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     504,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "57": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     61,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     36,
+     0,
+     164,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     500,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "58": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     58,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     33,
+     0,
+     161,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     497,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "59": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     54,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     29,
+     0,
+     157,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     493,
+     0,
+     638,
+     479
+    ]
+   }
+  ],
+  "60": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     54,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     29,
+     0,
+     157,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     493,
+     0,
+     638,
+     479
+    ]
+   }
+  ],
+  "61": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     59,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     34,
+     0,
+     162,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     498,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "62": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     64,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     39,
+     0,
+     167,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     503,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "63": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     68,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     43,
+     0,
+     171,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     507,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "64": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     73,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     48,
+     0,
+     176,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     512,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "65": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     77,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     52,
+     0,
+     180,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     516,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "66": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     82,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     57,
+     0,
+     185,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     521,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "67": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     86,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     61,
+     0,
+     189,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     525,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "68": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     91,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     66,
+     0,
+     194,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     530,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "69": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     95,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     70,
+     0,
+     198,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     534,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "70": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     100,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     75,
+     0,
+     203,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     539,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "71": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     104,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     79,
+     0,
+     207,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     543,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "72": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     109,
+     480
+    ],
+    "ignore": true
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     84,
+     0,
+     212,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     548,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "73": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     114,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     89,
+     0,
+     217,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     553,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "74": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     118,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     93,
+     0,
+     221,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     557,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "75": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     123,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     98,
+     0,
+     226,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     562,
+     0,
+     640,
+     479
+    ]
+   }
+  ],
+  "76": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     127,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     102,
+     0,
+     230,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     566,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "77": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     132,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     107,
+     0,
+     235,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     571,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "78": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     136,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     111,
+     0,
+     239,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     575,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "79": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     141,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     116,
+     0,
+     244,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     580,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "80": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     145,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     120,
+     0,
+     248,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     584,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "81": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     150,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     125,
+     0,
+     253,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     589,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "82": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     154,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     129,
+     0,
+     257,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     593,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "83": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     159,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     134,
+     0,
+     262,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     598,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "84": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     164,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     139,
+     0,
+     267,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     603,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "85": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     168,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     143,
+     0,
+     271,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     607,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "86": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     173,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     148,
+     0,
+     276,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     612,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "87": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     177,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     152,
+     0,
+     280,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-right-edge",
+    "class": "Person",
+    "bbox": [
+     616,
+     0,
+     640,
+     479
+    ],
+    "ignore": true
+   }
+  ],
+  "88": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     182,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     157,
+     0,
+     285,
+     458
+    ]
+   }
+  ],
+  "89": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     186,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     161,
+     0,
+     289,
+     458
+    ]
+   }
+  ],
+  "90": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     191,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     166,
+     0,
+     294,
+     458
+    ]
+   }
+  ],
+  "91": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     195,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     170,
+     0,
+     298,
+     458
+    ]
+   }
+  ],
+  "92": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     200,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     175,
+     0,
+     303,
+     458
+    ]
+   }
+  ],
+  "93": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     0,
+     0,
+     204,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     179,
+     0,
+     307,
+     458
+    ]
+   }
+  ],
+  "94": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     4,
+     0,
+     209,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     184,
+     0,
+     312,
+     458
+    ]
+   }
+  ],
+  "95": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     9,
+     0,
+     214,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     189,
+     0,
+     317,
+     458
+    ]
+   }
+  ],
+  "96": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     13,
+     0,
+     218,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     193,
+     0,
+     321,
+     458
+    ]
+   }
+  ],
+  "97": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     18,
+     0,
+     223,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     198,
+     0,
+     326,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     10,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "98": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     22,
+     0,
+     227,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     202,
+     0,
+     330,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     14,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "99": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     27,
+     0,
+     232,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     207,
+     0,
+     335,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     19,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "100": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     31,
+     0,
+     236,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     211,
+     0,
+     339,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     23,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "101": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     36,
+     0,
+     241,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     216,
+     0,
+     344,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     28,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "102": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     40,
+     0,
+     245,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     220,
+     0,
+     348,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     32,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "103": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     45,
+     0,
+     250,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     225,
+     0,
+     353,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     37,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "104": [
+   {
+    "label_id": "bus-fur-coat",
+    "class": "Person",
+    "bbox": [
+     49,
+     0,
+     254,
+     480
+    ]
+   },
+   {
+    "label_id": "bus-black-coat",
+    "class": "Person",
+    "bbox": [
+     229,
+     0,
+     357,
+     458
+    ]
+   },
+   {
+    "label_id": "bus-left-sliver",
+    "class": "Person",
+    "bbox": [
+     0,
+     150,
+     41,
+     472
+    ],
+    "ignore": true
+   }
+  ],
+  "105": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     76,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     498,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "106": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     72,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     494,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "107": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     67,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     489,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "108": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     62,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     484,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "109": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     57,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     479,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "110": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     52,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     474,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "111": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     47,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     469,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "112": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     43,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     465,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "113": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     38,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     460,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "114": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     33,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     455,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "115": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     28,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     450,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "116": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     23,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     445,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "117": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     18,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     440,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "118": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     14,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     436,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "119": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     9,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     431,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "120": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     4,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     426,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "121": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     421,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "122": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     416,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "123": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     411,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "124": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     407,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "125": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     402,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "126": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     640,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     397,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "127": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     636,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     392,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "128": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     631,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     387,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "129": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     626,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     382,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "130": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     621,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     377,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "131": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     617,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     373,
+     27,
+     636,
+     475
+    ]
+   }
+  ],
+  "132": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     612,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     368,
+     27,
+     631,
+     475
+    ]
+   }
+  ],
+  "133": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     607,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     363,
+     27,
+     626,
+     475
+    ]
+   }
+  ],
+  "134": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     602,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     358,
+     27,
+     621,
+     475
+    ]
+   }
+  ],
+  "135": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     597,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     353,
+     27,
+     616,
+     475
+    ]
+   }
+  ],
+  "136": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     592,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     348,
+     27,
+     611,
+     475
+    ]
+   }
+  ],
+  "137": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     588,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     344,
+     27,
+     607,
+     475
+    ]
+   }
+  ],
+  "138": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     583,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     339,
+     27,
+     602,
+     475
+    ]
+   }
+  ],
+  "139": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     578,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     334,
+     27,
+     597,
+     475
+    ]
+   }
+  ],
+  "140": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     573,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     329,
+     27,
+     592,
+     475
+    ]
+   }
+  ],
+  "141": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     568,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     324,
+     27,
+     587,
+     475
+    ]
+   }
+  ],
+  "142": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     563,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     319,
+     27,
+     582,
+     475
+    ]
+   }
+  ],
+  "143": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     559,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     315,
+     27,
+     578,
+     475
+    ]
+   }
+  ],
+  "144": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     554,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     310,
+     27,
+     573,
+     475
+    ]
+   }
+  ],
+  "145": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     549,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     305,
+     27,
+     568,
+     475
+    ]
+   }
+  ],
+  "146": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     544,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     300,
+     27,
+     563,
+     475
+    ]
+   }
+  ],
+  "147": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     539,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     295,
+     27,
+     558,
+     475
+    ]
+   }
+  ],
+  "148": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     534,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     290,
+     27,
+     553,
+     475
+    ]
+   }
+  ],
+  "149": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     529,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     285,
+     27,
+     548,
+     475
+    ]
+   }
+  ],
+  "150": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     529,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     285,
+     27,
+     548,
+     475
+    ]
+   }
+  ],
+  "151": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     533,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     289,
+     27,
+     552,
+     475
+    ]
+   }
+  ],
+  "152": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     537,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     293,
+     27,
+     556,
+     475
+    ]
+   }
+  ],
+  "153": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     541,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     297,
+     27,
+     560,
+     475
+    ]
+   }
+  ],
+  "154": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     544,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     300,
+     27,
+     563,
+     475
+    ]
+   }
+  ],
+  "155": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     548,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     304,
+     27,
+     567,
+     475
+    ]
+   }
+  ],
+  "156": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     552,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     308,
+     27,
+     571,
+     475
+    ]
+   }
+  ],
+  "157": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     555,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     311,
+     27,
+     574,
+     475
+    ]
+   }
+  ],
+  "158": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     559,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     315,
+     27,
+     578,
+     475
+    ]
+   }
+  ],
+  "159": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     563,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     319,
+     27,
+     582,
+     475
+    ]
+   }
+  ],
+  "160": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     566,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     322,
+     27,
+     585,
+     475
+    ]
+   }
+  ],
+  "161": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     570,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     326,
+     27,
+     589,
+     475
+    ]
+   }
+  ],
+  "162": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     574,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     330,
+     27,
+     593,
+     475
+    ]
+   }
+  ],
+  "163": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     577,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     333,
+     27,
+     596,
+     475
+    ]
+   }
+  ],
+  "164": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     581,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     337,
+     27,
+     600,
+     475
+    ]
+   }
+  ],
+  "165": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     585,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     341,
+     27,
+     604,
+     475
+    ]
+   }
+  ],
+  "166": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     588,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     344,
+     27,
+     607,
+     475
+    ]
+   }
+  ],
+  "167": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     592,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     348,
+     27,
+     611,
+     475
+    ]
+   }
+  ],
+  "168": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     596,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     352,
+     27,
+     615,
+     475
+    ]
+   }
+  ],
+  "169": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     599,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     355,
+     27,
+     618,
+     475
+    ]
+   }
+  ],
+  "170": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     603,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     359,
+     27,
+     622,
+     475
+    ]
+   }
+  ],
+  "171": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     607,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     363,
+     27,
+     626,
+     475
+    ]
+   }
+  ],
+  "172": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     610,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     366,
+     27,
+     629,
+     475
+    ]
+   }
+  ],
+  "173": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     614,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     370,
+     27,
+     633,
+     475
+    ]
+   }
+  ],
+  "174": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     618,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     374,
+     27,
+     637,
+     475
+    ]
+   }
+  ],
+  "175": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     621,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     377,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "176": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     625,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     381,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "177": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     629,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     385,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "178": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     632,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     388,
+     27,
+     640,
+     475
+    ]
+   }
+  ],
+  "179": [
+   {
+    "label_id": "zidane",
+    "class": "Person",
+    "bbox": [
+     0,
+     131,
+     636,
+     474
+    ]
+   },
+   {
+    "label_id": "ancelotti",
+    "class": "Person",
+    "bbox": [
+     392,
+     27,
+     640,
+     475
+    ]
+   }
+  ]
+ },
+ "events": [
+  {
+   "type": "intrusion",
+   "label_id": "bus-right-edge",
+   "zone": null,
+   "start": 39,
+   "end": 75
+  },
+  {
+   "type": "intrusion",
+   "label_id": "zidane",
+   "zone": null,
+   "start": 105,
+   "end": 179
+  },
+  {
+   "type": "intrusion",
+   "label_id": "ancelotti",
+   "zone": null,
+   "start": 105,
+   "end": 179
+  }
+ ],
+ "event_tolerance_frames": 30,
+ "source": "ultralytics sample photos bus.jpg and zidane.jpg, boxes verified by hand"
+}

@@ -1,0 +1,7 @@
+# Developer tooling (not needed to run the service).
+#   pip install -r requirements.txt -r requirements-dev.txt
+-r requirements.txt
+ruff>=0.14
+pytest-cov>=6
+pip-audit>=2.9
+bandit>=1.8
